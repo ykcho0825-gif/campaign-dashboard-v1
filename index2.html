@@ -1,0 +1,2177 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>캠페인 통합 페이지</title>
+  <style>
+    * { box-sizing: border-box; }
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .global-tab-shell {
+      position: sticky;
+      top: 0;
+      z-index: 999999;
+      background: rgba(248, 250, 252, 0.92);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid #e2e8f0;
+      padding: 12px 20px;
+    }
+    .global-tab-inner {
+      max-width: 1250px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+    .global-title {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      color: #0f172a;
+      white-space: nowrap;
+    }
+    .global-tabs {
+      display: inline-flex;
+      gap: 6px;
+      padding: 5px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      border-radius: 999px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.06);
+    }
+    .global-tab-btn {
+      border: 0;
+      padding: 10px 20px;
+      border-radius: 999px;
+      background: transparent;
+      color: #64748b;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .global-tab-btn:hover {
+      color: #0f172a;
+      background: #f1f5f9;
+    }
+    .global-tab-btn.active {
+      color: #ffffff;
+      background: #334155;
+      box-shadow: 0 6px 18px rgba(17, 24, 39, 0.22);
+    }
+    .tab-panel {
+      display: none;
+      width: 100%;
+    }
+    .tab-panel.active {
+      display: block;
+    }
+    .tab-frame {
+      display: block;
+      width: 100%;
+      height: calc(100vh - 67px);
+      min-height: 720px;
+      border: 0;
+      background: #f8fafc;
+    }
+    @media (max-width: 640px) {
+      .global-tab-shell { padding: 10px 12px; }
+      .global-tab-inner { flex-direction: column; align-items: stretch; gap: 10px; }
+      .global-title { text-align: center; }
+      .global-tabs { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+      .global-tab-btn { width: 100%; padding: 10px 8px; font-size: 13px; }
+      .tab-frame { height: calc(100vh - 105px); min-height: 680px; }
+    }
+
+
+    /* ===== 심플 세로 메뉴형 레이아웃 ===== */
+    .global-tab-shell {
+      display: none !important;
+    }
+    .app-shell {
+      display: flex;
+      min-height: 100vh;
+      width: 100%;
+      background: #f8fafc;
+    }
+    .side-menu {
+      width: 220px;
+      min-width: 220px;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      background: #ffffff;
+      border-right: 1px solid #e2e8f0;
+      display: flex;
+      flex-direction: column;
+      padding: 20px 0;
+      z-index: 999999;
+      box-shadow: 4px 0 18px rgba(15, 23, 42, 0.06);
+    }
+    .side-menu-title {
+      padding: 0 22px 18px;
+      margin-bottom: 8px;
+      border-bottom: 1px solid #f1f5f9;
+      font-size: 14px;
+      font-weight: 800;
+      color: #0f172a;
+      letter-spacing: -0.02em;
+      line-height: 1.4;
+    }
+    .side-menu-btn {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      padding: 16px 22px;
+      text-align: left;
+      font-size: 15px;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border-left: 4px solid transparent;
+    }
+    .side-menu-btn:hover {
+      background: #f8fafc;
+      color: #0f172a;
+    }
+    .side-menu-btn.active {
+      background: #f1f5f9;
+      color: #0f172a;
+      border-left-color: #0f172a;
+      font-weight: 800;
+    }
+    .content-area {
+      flex: 1;
+      min-width: 0;
+      background: #f8fafc;
+    }
+    .tab-frame {
+      height: 100vh;
+      min-height: 720px;
+    }
+    @media (max-width: 760px) {
+      .app-shell {
+        flex-direction: column;
+      }
+      .side-menu {
+        width: 100%;
+        min-width: 0;
+        height: auto;
+        position: sticky;
+        top: 0;
+        flex-direction: row;
+        padding: 0;
+        border-right: 0;
+        border-bottom: 1px solid #334155;
+      }
+      .side-menu-title {
+        display: none;
+      }
+      .side-menu-btn {
+        flex: 1;
+        text-align: center;
+        padding: 14px 8px;
+        border-left: 0;
+        border-bottom: 3px solid transparent;
+        font-size: 14px;
+      }
+      .side-menu-btn.active {
+        border-left-color: transparent;
+        border-bottom-color: #94a3b8;
+      }
+      .tab-frame {
+        height: calc(100vh - 51px);
+        min-height: 680px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="side-menu" aria-label="캠페인 메뉴">
+      <div class="side-menu-title">B tv Campaign Dashboard</div>
+      <button type="button" class="side-menu-btn active" data-tab="calendarPanel">캠페인 캘린더</button>
+      <button type="button" class="side-menu-btn" data-tab="applyPanel">캠페인 신청</button>
+    </aside>
+
+    <main class="content-area">
+    <section id="calendarPanel" class="tab-panel active" aria-label="캠페인 캘린더">
+      <iframe id="calendarFrame" class="tab-frame" title="캠페인 캘린더" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+    &lt;meta charset=&#x27;utf-8&#x27; /&gt;
+    &lt;title&gt;B tv Campaign Dashboard V6.7 (Modal Fixed &amp; Compact Tooltip)&lt;/title&gt;
+    &lt;link href=&#x27;https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css&#x27; rel=&#x27;stylesheet&#x27; /&gt;
+    &lt;script src=&#x27;https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js&#x27;&gt;&lt;/script&gt;
+    &lt;script src=&#x27;https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales-all.min.js&#x27;&gt;&lt;/script&gt;
+    &lt;style&gt;
+        :root {
+            /* 프리미엄 라이트톤 스키마 */
+            --bg-main: #f8fafc;        /* 전체 배경 */
+            --bg-card: #ffffff;        /* 카드 및 컨테이너 배경 */
+            --bg-card-inner: #f1f5f9;  /* 내부 요소 배경 */
+            --text-main: #0f172a;      /* 주 텍스트 */
+            --text-muted: #64748b;     /* 보조 텍스트 */
+            --border-color: #e2e8f0;   /* 선/테두리 색상 */
+            
+            --start-color: #a855f7;    /* 시작 캠페인 포인트: 세련된 퍼플 */
+            --end-color: #64748b;      /* 종료 캠페인 포인트: 차분한 슬레이트 그레이 */
+            
+            --accent-blue: #0284c7;    /* 하이라이트 블루 */
+            --accent-purple: #7e22ce;  /* 하이라이트 퍼플 */
+            
+            --gantt-bar-bg: #e2e8f0;
+            --gantt-bar-border: #94a3b8;
+        }
+
+        body {
+            margin: 0; padding: 25px;
+            font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;
+            background-color: var(--bg-main); color: var(--text-main);
+            transition: background-color 0.3s ease;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        .header-container, #calendar, #ganttContainer { max-width: 1250px; margin: 0 auto; }
+        
+        #loadingOverlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(248, 250, 252, 0.95); z-index: 9999;
+            display: flex; justify-content: center; align-items: center; 
+            font-weight: 600; font-size: 15px; color: var(--accent-blue);
+        }
+
+        /* 헤더 섹션 */
+        .top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; }
+        .title-section h2 { font-size: 20px; font-weight: 700; color: var(--text-main); margin: 0; letter-spacing: -0.02em; }
+        
+        .action-section { display: flex; gap: 12px; align-items: center; }
+        .search-input { 
+            padding: 9px 14px; border-radius: 8px; border: 1px solid var(--border-color); 
+            background-color: var(--bg-card); color: var(--text-main); font-size: 13px; width: 240px; 
+            outline: none; transition: all 0.2s ease;
+        }
+        .search-input:focus { border-color: var(--accent-blue); box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.15); }
+        
+        .toggle-btn {
+            padding: 9px 18px; background-color: var(--bg-card); border: 1px solid var(--border-color);
+            color: var(--text-main); border-radius: 8px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.2s ease; user-select: none;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .toggle-btn:hover { background-color: var(--bg-card-inner); border-color: #cbd5e1; }
+
+        /* 요약 바 현황판 */
+        .summary-bar {
+            display: flex; gap: 30px; background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 16px 24px; border-radius: 12px; margin-bottom: 25px; font-size: 13px;
+            flex-wrap: wrap; align-items: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+        .summary-group { display: flex; gap: 20px; align-items: center; }
+        .summary-group:not(:last-child) { border-right: 1px solid var(--border-color); padding-right: 25px; }
+        .summary-item { color: #334155; }
+        .summary-item b { color: var(--text-main); font-size: 15px; font-weight: 700; }
+        .summary-label { font-weight: 700; color: var(--start-color); margin-right: 6px; }
+
+        /* 컨트롤 패널 필터 */
+        .control-panel { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 20px; }
+        .filter-title { font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .filter-wrapper { display: flex; flex-direction: column; gap: 4px; }
+        .filter-section { display: flex; gap: 10px; align-items: center; }
+        
+        .filter-chip {
+            padding: 8px 16px; background: var(--bg-card); border-radius: 8px; color: var(--text-muted);
+            font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid var(--border-color); user-select: none; transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .filter-chip:hover { border-color: #cbd5e1; color: var(--text-main); }
+        .filter-chip input { display: none; }
+        .filter-chip:has(input:checked) { background: #e0f2fe; border-color: var(--accent-blue); color: var(--accent-blue); font-weight: 700; }
+
+        .checkbox-label {
+            display: inline-flex; align-items: center; gap: 8px; font-size: 12px;
+            font-weight: 500; color: var(--text-main); cursor: pointer; user-select: none; padding: 6px 4px;
+        }
+        .checkbox-label input[type=&quot;checkbox&quot;] {
+            appearance: none; -webkit-appearance: none; background-color: var(--bg-card); margin: 0;
+            font: inherit; color: currentColor; width: 16px; height: 16px; border: 1.5px solid var(--border-color); 
+            border-radius: 4px; display: grid; place-content: center; cursor: pointer; transition: all 0.15s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.02);
+        }
+        .checkbox-label input[type=&quot;checkbox&quot;]:hover { border-color: #cbd5e1; }
+        .checkbox-label input[type=&quot;checkbox&quot;]:checked { background-color: var(--accent-blue); border-color: var(--accent-blue); }
+        .checkbox-label input[type=&quot;checkbox&quot;]::before {
+            content: &quot;&quot;; width: 9px; height: 6px; border-left: 2px solid #ffffff; border-bottom: 2px solid #ffffff;
+            transform: rotate(-45deg) translate(1px, -1px); scale: 0; transition: scale 0.1s ease-in-out;
+        }
+        .checkbox-label input[type=&quot;checkbox&quot;]:checked::before { scale: 1; }
+
+        .filter-dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; margin-left: 2px; margin-right: 2px; }
+        .filter-dot.start { background-color: var(--start-color); }
+        .filter-dot.end { background-color: var(--end-color); }
+
+        /* FullCalendar 테마 오버라이딩 */
+        #calendar {
+            background-color: var(--bg-card); padding: 20px; border-radius: 14px; 
+            border: 1px solid var(--border-color); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+        }
+        .fc { color: var(--text-main) !important; }
+        .fc th { border-color: var(--border-color) !important; background-color: #f8fafc; color: var(--text-muted); }
+        .fc td { border-color: var(--border-color) !important; }
+        .fc-theme-standard .fc-scrollgrid { border-color: var(--border-color) !important; border-radius: 8px; overflow: hidden; }
+        
+        .fc .fc-toolbar-title { font-size: 18px !important; font-weight: 700 !important; color: var(--text-main) !important; }
+        .fc .fc-daygrid-day-number { font-size: 13px !important; font-weight: 600 !important; color: #475569 !important; padding: 8px !important; }
+        .fc .fc-col-header-cell .fc-scrollgrid-sync-inner { font-size: 13px !important; font-weight: 600 !important; padding: 10px 0 !important; color: #475569; }
+        
+        .fc-day-sat .fc-daygrid-day-number { color: #0284c7 !important; }
+        .fc-day-sun .fc-daygrid-day-number { color: #ea580c !important; }
+
+        .fc .fc-button-primary { background-color: var(--bg-card) !important; border-color: var(--border-color) !important; color: var(--text-main) !important; font-weight: 600 !important; box-shadow: 0 1px 2px rgba(0,0,0,0.05) !important; }
+        .fc .fc-button-primary:hover { background-color: var(--bg-card-inner) !important; border-color: #cbd5e1 !important; }
+        .fc .fc-button-primary:disabled { background-color: #f1f5f9 !important; border-color: #e2e8f0 !important; opacity: 0.6; color: #94a3b8 !important; }
+        .fc .fc-button-active { background-color: #e0f2fe !important; border-color: var(--accent-blue) !important; color: var(--accent-blue) !important; }
+        .fc-daygrid-more-link { font-size: 11px !important; font-weight: 600 !important; color: var(--accent-blue) !important; }
+        
+        /* 캘린더 내부 일정 막대 디자인 */
+        .fc-event { cursor: pointer; padding: 3px 6px; border-radius: 4px !important; border: none !important; margin-bottom: 2px !important; transition: opacity 0.15s; }
+        .fc-event:hover { opacity: 0.85; }
+        .fc-event-title { font-weight: 600 !important; font-size: 11px; }
+        
+        .event-start { background-color: #f3ebf7 !important; border-left: 3px solid var(--start-color) !important; }
+        .event-start .fc-event-title { color: #6b21a8 !important; }
+        
+        .event-end { background-color: #f1f5f9 !important; border-left: 3px solid var(--end-color) !important; }
+        .event-end .fc-event-title { color: #475569 !important; }
+
+        /* 간트차트 뷰 레이아웃 */
+        #ganttContainer { display: none; margin-top: 10px; animation: fadeIn 0.3s ease; }
+        .gantt-toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5em; }
+        #ganttMonthTitle { font-size: 18px; font-weight: 700; color: var(--text-main); margin: 0; }
+        .gantt-toolbar-right { display: flex; gap: 8px; align-items: center; }
+        .gantt-btn-group { display: flex; }
+        .gantt-btn {
+            background-color: var(--bg-card); border: 1px solid var(--border-color); color: var(--text-main);
+            padding: 6px 12px; font-size: 12px; cursor: pointer; transition: all 0.2s;
+            height: 30px; display: flex; align-items: center; justify-content: center; font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+        }
+        .gantt-btn-today { border-radius: 6px; }
+        .gantt-btn-prev { border-radius: 6px 0 0 6px; border-right: none; }
+        .gantt-btn-next { border-radius: 0 6px 6px 0; }
+        .gantt-btn:hover { background-color: var(--bg-card-inner); border-color: #cbd5e1; }
+
+        .gantt-border-wrap { border: 1px solid var(--border-color); border-radius: 12px; overflow: hidden; background: var(--bg-card); box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05); }
+        
+        .gantt-table-row-layout { display: flex; align-items: stretch; width: 100%; box-sizing: border-box; }
+        .gantt-label-col { width: 250px; min-width: 250px; max-width: 250px; padding: 12px; border-right: 1px solid var(--border-color); box-sizing: border-box; display: flex; align-items: center; }
+        .gantt-timeline-col { flex-grow: 1; display: grid; position: relative; box-sizing: border-box; }
+        .gantt-header { background: #f8fafc; border-bottom: 1px solid var(--border-color); font-weight: 600; font-size: 11px; color: var(--text-muted); }
+        
+        .gantt-month-day { text-align: center; padding: 12px 0; font-variant-numeric: tabular-nums; color: var(--text-muted); font-size: 10px; box-sizing: border-box; border-right: 1px solid var(--border-color); }
+        .gantt-month-day:last-child { border-right: none; } 
+        .gantt-month-day.sat { color: var(--accent-blue); }
+        .gantt-month-day.sun { color: #ea580c; }
+
+        .gantt-body { max-height: 600px; overflow-y: auto; }
+        .gantt-row { border-bottom: 1px solid var(--border-color); min-height: 44px; background: var(--bg-card); transition: background 0.15s; }
+        .gantt-row:hover { background: #f8fafc; }
+        .gantt-row:last-child { border-bottom: none; }
+        .gantt-title-cell { font-size: 13px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .gantt-grid-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: grid; pointer-events: none; z-index: 1; box-sizing: border-box; }
+        .gantt-cell-col { box-sizing: border-box; height: 100%; border-right: none !important; }
+        .gantt-bar-container { position: relative; width: 100%; min-height: 44px; display: flex; align-items: center; z-index: 2; }
+        
+        .gantt-bar {
+            position: absolute; height: 26px; line-height: 26px; background: var(--gantt-bar-bg); color: var(--text-main);
+            border-left: 4px solid var(--gantt-bar-border); border-radius: 6px; font-size: 12px; font-weight: 600;
+            padding: 0 10px; box-sizing: border-box; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+            cursor: pointer; transition: transform 0.1s, background-color 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        }
+        .gantt-bar:hover { transform: scale(1.005); background: #cbd5e1; border-left-color: var(--accent-blue); }
+        .gantt-empty-msg { text-align: center; color: var(--text-muted); padding: 50px 0; font-size: 13px; width: 100%; background: var(--bg-card); }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* 모달 레이아웃 */
+        .modal { display: none; position: fixed; z-index: 10000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(15, 23, 42, 0.3); backdrop-filter: blur(6px); }
+        .modal-content { background: var(--bg-card); border: 1px solid var(--border-color); margin: 8% auto; padding: 25px; width: 420px; border-radius: 18px; box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04); color: var(--text-main); }
+        
+        /* [사이즈 수정] 더 콤팩트하고 작아진 연한 회색 호버 물방울 툴팁 */
+        .hover-tooltip {
+            position: absolute; z-index: 9999; display: none;
+            background: rgba(226, 232, 240, 0.96) !important; /* 투명도 있는 세련된 연한 회색 */
+            border: 1px solid #cbd5e1;
+            padding: 6px 12px; width: auto; max-width: 480px; border-radius: 8px; /* 크기 및 패딩 축소 */
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.08); backdrop-filter: blur(8px);
+            pointer-events: none; animation: fadeIn 0.12s ease;
+            font-size: 11.5px; line-height: 1.5; /* 폰트 자간 최적화 */
+            color: #000000 !important; /* 전체 글씨 무조건 검정 */
+        }
+        
+        /* 툴팁 내부 텍스트 무조건 블랙 바인딩 */
+        .hover-tooltip span, .hover-tooltip strong {
+            color: #000000 !important;
+        }
+        
+        .modal-target-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+        .modal-target-card { background: var(--bg-card-inner); padding: 10px 12px; border-radius: 8px; font-size: 11px; border: 1px solid var(--border-color); box-sizing: border-box; }
+        .modal-target-card-label { font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+        .modal-target-card-value { font-size: 14px; font-weight: 700; color: var(--text-main); }
+        .capa-text { display: block; font-size: 10px; font-weight: 600; color: #0284c7; margin-top: 2px; }
+    &lt;/style&gt;
+&lt;/head&gt;
+&lt;body&gt;
+
+    &lt;div id=&quot;loadingOverlay&quot;&gt;구글 스프레드시트 연동 중...&lt;/div&gt;
+
+    &lt;div class=&quot;header-container&quot;&gt;
+        &lt;div class=&quot;top-row&quot;&gt;
+            &lt;div class=&quot;title-section&quot;&gt;&lt;h2&gt;B tv Campaign Dashboard&lt;/h2&gt;&lt;/div&gt;
+            &lt;div class=&quot;action-section&quot;&gt;
+                &lt;input type=&quot;text&quot; id=&quot;eventSearch&quot; class=&quot;search-input&quot; placeholder=&quot;캠페인명 검색...&quot;&gt;
+                &lt;button id=&quot;viewToggleBtn&quot; class=&quot;toggle-btn&quot; onclick=&quot;toggleViewMode()&quot;&gt;목록 보기&lt;/button&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;div class=&quot;summary-bar&quot;&gt;
+            &lt;div class=&quot;summary-group&quot;&gt;
+                &lt;span class=&quot;summary-label&quot;&gt;[요약]&lt;/span&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;이번 달 시작: &lt;b id=&quot;startCount&quot;&gt;0&lt;/b&gt;건&lt;/div&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;이번 달 종료: &lt;b id=&quot;endCount&quot;&gt;0&lt;/b&gt;건&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;summary-group&quot;&gt;
+                &lt;span class=&quot;summary-label&quot;&gt;[채널별]&lt;/span&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;TV팝업: &lt;b id=&quot;tvCount&quot;&gt;0&lt;/b&gt;건 &lt;span id=&quot;tvTarget&quot; style=&quot;color:var(--text-muted); margin-left:2px;&quot;&gt;(0만)&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;토스트팝업: &lt;b id=&quot;toastCount&quot;&gt;0&lt;/b&gt;건 &lt;span id=&quot;toastTarget&quot; style=&quot;color:var(--text-muted); margin-left:2px;&quot;&gt;(0만)&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;쿠폰: &lt;b id=&quot;couponCount&quot;&gt;0&lt;/b&gt;건 &lt;span id=&quot;couponTarget&quot; style=&quot;color:var(--text-muted); margin-left:2px;&quot;&gt;(0만)&lt;/span&gt;&lt;/div&gt;
+                &lt;div class=&quot;summary-item&quot;&gt;Seg채널: &lt;b id=&quot;segCount&quot;&gt;0&lt;/b&gt;건 &lt;span id=&quot;segTarget&quot; style=&quot;color:var(--text-muted); margin-left:2px;&quot;&gt;(0만)&lt;/span&gt;&lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        
+        &lt;div class=&quot;control-panel&quot;&gt;
+            &lt;div class=&quot;filter-wrapper&quot;&gt;
+                &lt;div class=&quot;filter-title&quot;&gt;채널 필터&lt;/div&gt;
+                &lt;div class=&quot;filter-section&quot;&gt;
+                    &lt;label class=&quot;filter-chip&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;type-filter&quot; value=&quot;TV&quot;&gt; TV팝업&lt;/label&gt;
+                    &lt;label class=&quot;filter-chip&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;type-filter&quot; value=&quot;토스트팝업&quot;&gt; 토스트팝업&lt;/label&gt;
+                    &lt;label class=&quot;filter-chip&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;type-filter&quot; value=&quot;쿠폰&quot;&gt; 쿠폰&lt;/label&gt;
+                    &lt;label class=&quot;filter-chip&quot;&gt;&lt;input type=&quot;checkbox&quot; class=&quot;type-filter&quot; value=&quot;Seg채널&quot;&gt; Seg채널&lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+
+            &lt;div class=&quot;filter-wrapper&quot; style=&quot;align-items: flex-end;&quot;&gt;
+                &lt;div class=&quot;filter-title&quot; style=&quot;align-self: flex-end;&quot;&gt;일정 종류 필터&lt;/div&gt;
+                &lt;div class=&quot;filter-section&quot; style=&quot;gap: 12px;&quot;&gt;
+                    &lt;label class=&quot;checkbox-label&quot;&gt;
+                        &lt;input type=&quot;checkbox&quot; class=&quot;date-filter&quot; value=&quot;start&quot; checked&gt;
+                        &lt;span class=&quot;filter-dot start&quot;&gt;&lt;/span&gt;시작일(보라)
+                    &lt;/label&gt;
+                    &lt;label class=&quot;checkbox-label&quot;&gt;
+                        &lt;input type=&quot;checkbox&quot; class=&quot;date-filter&quot; value=&quot;end&quot; checked&gt;
+                        &lt;span class=&quot;filter-dot end&quot;&gt;&lt;/span&gt;종료일(회색)
+                    &lt;/label&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&#x27;calendar&#x27;&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;ganttContainer&quot;&gt;
+        &lt;div class=&quot;gantt-toolbar&quot;&gt;
+            &lt;div class=&quot;gantt-toolbar-left&quot;&gt;&lt;h2 id=&quot;ganttMonthTitle&quot;&gt;&lt;/h2&gt;&lt;/div&gt;
+            &lt;div class=&quot;gantt-toolbar-right&quot;&gt;
+                &lt;button class=&quot;gantt-btn gantt-btn-today&quot; onclick=&quot;navigateGantt(&#x27;today&#x27;)&quot;&gt;오늘&lt;/button&gt;
+                &lt;div class=&quot;gantt-btn-group&quot;&gt;
+                    &lt;button class=&quot;gantt-btn gantt-btn-prev&quot; onclick=&quot;navigateGantt(&#x27;prev&#x27;)&quot;&gt;&amp;lt;&lt;/button&gt;
+                    &lt;button class=&quot;gantt-btn gantt-btn-next&quot; onclick=&quot;navigateGantt(&#x27;next&#x27;)&quot;&gt;&amp;gt;&lt;/button&gt;
+                &lt;/div&gt;
+            &lt;/div&gt;
+        &lt;/div&gt;
+        &lt;div class=&quot;gantt-border-wrap&quot;&gt;
+            &lt;div class=&quot;gantt-header gantt-table-row-layout&quot;&gt;
+                &lt;div class=&quot;gantt-label-col&quot;&gt;캠페인명&lt;/div&gt;
+                &lt;div class=&quot;gantt-timeline-col&quot; id=&quot;ganttHeaderTimeline&quot;&gt;&lt;/div&gt;
+            &lt;/div&gt;
+            &lt;div class=&quot;gantt-body&quot; id=&quot;ganttRowsContainer&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;div id=&quot;dateHoverTooltip&quot; class=&quot;hover-tooltip&quot;&gt;&lt;/div&gt;
+
+    &lt;div id=&quot;eventModal&quot; class=&quot;modal&quot;&gt;
+        &lt;div class=&quot;modal-content&quot;&gt;
+            &lt;span style=&quot;float:right; cursor:pointer; font-weight:bold; color:var(--text-muted); font-size: 18px;&quot; onclick=&quot;closeModal()&quot;&gt;&amp;times;&lt;/span&gt;
+            &lt;div id=&quot;modalTitle&quot; style=&quot;font-size:16px; font-weight:700; margin-bottom:15px; border-bottom:1px solid var(--border-color); padding-bottom:10px; color:var(--text-main);&quot;&gt;&lt;/div&gt;
+            &lt;div id=&quot;modalBody&quot; style=&quot;font-size:13.5px; line-height:1.7; color:#334155;&quot;&gt;&lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+    &lt;script&gt;
+        const SPREADSHEET_CSV_URL = &#x27;https://docs.google.com/spreadsheets/d/e/2PACX-1vSJDqgcPmC1RsB_57OgHxXZ9uqKNiGDICkSKqftjk6CbflfyhVWA2G0LrqLBwuQtTNsffKBtc-aKbD0/pub?output=csv&#x27;;
+
+        let rawSourceData = []; 
+        let allEvents = [];
+        let calendar;
+        let currentViewMode = &#x27;calendar&#x27;; 
+        let currentFilteredEvents = []; 
+
+        document.addEventListener(&#x27;DOMContentLoaded&#x27;, function() {
+            fetchDataFromCSV();
+
+            document.querySelectorAll(&#x27;.type-filter&#x27;).forEach(cb =&gt; cb.addEventListener(&#x27;change&#x27;, applyFilters));
+            document.querySelectorAll(&#x27;.date-filter&#x27;).forEach(cb =&gt; cb.addEventListener(&#x27;change&#x27;, applyFilters));
+            document.getElementById(&#x27;eventSearch&#x27;).addEventListener(&#x27;input&#x27;, applyFilters);
+        });
+
+        function parseCSV(csvText) {
+            const lines = csvText.split(/\r?\n/);
+            if (lines.length === 0) return [];
+
+            const headers = parseCSVLine(lines[0]);
+            const result = [];
+
+            for (let i = 1; i &lt; lines.length; i++) {
+                if (!lines[i].trim()) continue;
+                const currentLine = parseCSVLine(lines[i]);
+                const obj = {};
+                
+                headers.forEach((header, index) =&gt; {
+                    obj[header.trim()] = currentLine[index] ? currentLine[index].trim() : &quot;&quot;;
+                });
+                result.push(obj);
+            }
+            return result;
+        }
+
+        function parseCSVLine(line) {
+            const arr = [];
+            let quote = false;
+            let cell = &quot;&quot;;
+            for (let i = 0; i &lt; line.length; i++) {
+                let char = line[i];
+                if (char === &#x27;&quot;&#x27;) {
+                    quote = !quote;
+                } else if (char === &#x27;,&#x27; &amp;&amp; !quote) {
+                    arr.push(cell);
+                    cell = &quot;&quot;;
+                } else {
+                    cell += char;
+                }
+            }
+            arr.push(cell);
+            return arr;
+        }
+
+        function fetchDataFromCSV() {
+            fetch(SPREADSHEET_CSV_URL)
+                .then(res =&gt; {
+                    if (!res.ok) throw new Error(&quot;시트 연결 실패&quot;);
+                    return res.text();
+                })
+                .then(csvText =&gt; {
+                    rawSourceData = parseCSV(csvText);
+                    allEvents = processEvents(rawSourceData);
+                    initCalendar(allEvents);
+                    document.getElementById(&#x27;loadingOverlay&#x27;).style.display = &#x27;none&#x27;;
+                    updateSummary();
+                })
+                .catch(err =&gt; {
+                    document.getElementById(&#x27;loadingOverlay&#x27;).innerText = &quot;구글 시트 연동 오류가 발생했습니다. (링크 공개 상태 확인 필요)&quot;;
+                    console.error(err);
+                });
+        }
+
+        function getTargetValue(item) {
+            let targetValue = 0;
+            Object.keys(item).forEach(k =&gt; {
+                const normalizedKey = k.replace(/\s+/g, &#x27;&#x27;); 
+                if (normalizedKey === &#x27;타겟수&#x27; || normalizedKey === &#x27;타겟수(만)&#x27;) {
+                    const cleanNum = String(item[k]).replace(/[^0-9]/g, &#x27;&#x27;);
+                    if (cleanNum) targetValue = Number(cleanNum);
+                }
+            });
+            return targetValue;
+        }
+
+        function toggleViewMode() {
+            const calEl = document.getElementById(&#x27;calendar&#x27;);
+            const ganttEl = document.getElementById(&#x27;ganttContainer&#x27;);
+            const btn = document.getElementById(&#x27;viewToggleBtn&#x27;);
+            const tooltip = document.getElementById(&#x27;dateHoverTooltip&#x27;);
+            
+            if(tooltip) tooltip.style.display = &#x27;none&#x27;;
+
+            if (currentViewMode === &#x27;calendar&#x27;) {
+                currentViewMode = &#x27;gantt&#x27;;
+                calEl.style.display = &#x27;none&#x27;;
+                ganttEl.style.display = &#x27;block&#x27;;
+                btn.innerText = &#x27;캘린더 보기&#x27;;
+                updateGanttTitle(); 
+                applyFilters(); 
+            } else {
+                currentViewMode = &#x27;calendar&#x27;;
+                ganttEl.style.display = &#x27;none&#x27;;
+                calEl.style.display = &#x27;block&#x27;;
+                btn.innerText = &#x27;목록 보기&#x27;; 
+                if(calendar) calendar.render(); 
+                applyFilters();
+            }
+        }
+
+        function navigateGantt(action) {
+            if (!calendar) return;
+            if (action === &#x27;prev&#x27;) { calendar.prev(); } 
+            else if (action === &#x27;next&#x27;) { calendar.next(); } 
+            else if (action === &#x27;today&#x27;) { calendar.today(); }
+        }
+
+        function updateGanttTitle() {
+            if (calendar) { document.getElementById(&#x27;ganttMonthTitle&#x27;).innerText = calendar.view.title; }
+        }
+
+        function cleanDateStr(dateVal) {
+            if (!dateVal) return &quot;&quot;;
+            let str = String(dateVal).trim();
+            if (str.includes(&quot;T&quot;)) { str = str.split(&quot;T&quot;)[0]; }
+            return str; 
+        }
+
+        function formatTargetNumber(num) {
+            if (!num || isNaN(num) || num === 0) return &quot;0만&quot;;
+            if (num &gt;= 10000) { return Math.round(num / 10000).toLocaleString(&#x27;ko-KR&#x27;) + &quot;만&quot;; } 
+            else if (num &gt;= 1000) { return Math.round(num / 1000).toLocaleString(&#x27;ko-KR&#x27;) + &quot;천&quot;; } 
+            else { return Math.round(num / 100).toLocaleString(&#x27;ko-KR&#x27;) + &quot;백&quot;; }
+        }
+
+        function processEvents(data) {
+            let processed = [];
+            data.forEach(event =&gt; {
+                const startVal = cleanDateStr(event[&#x27;시작일&#x27;]);
+                const endVal = cleanDateStr(event[&#x27;종료일&#x27;]) || startVal;
+                const titleVal = event[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+
+                if (startVal) {
+                    processed.push({ 
+                        title: titleVal, 
+                        start: startVal, 
+                        allDay: true,
+                        className: &#x27;event-start&#x27;, 
+                        extendedProps: { ...event, type: &#x27;start&#x27;, sortOrder: 1, _calStart: startVal, _calEnd: endVal } 
+                    });
+
+                    if (endVal &amp;&amp; startVal !== endVal) {
+                        processed.push({ 
+                            title: titleVal, 
+                            start: endVal, 
+                            allDay: true,
+                            className: &#x27;event-end&#x27;, 
+                            extendedProps: { ...event, type: &#x27;end&#x27;, sortOrder: 2, _calStart: startVal, _calEnd: endVal } 
+                        });
+                    }
+                }
+            });
+            return processed;
+        }
+
+        function initCalendar(data) {
+            var calendarEl = document.getElementById(&#x27;calendar&#x27;);
+            calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: &#x27;dayGridMonth&#x27;, 
+                initialDate: &#x27;2026-05-01&#x27;, 
+                locale: &#x27;ko&#x27;,
+                events: data, 
+                dayMaxEvents: 6, 
+                height: &#x27;auto&#x27;,
+                eventOrder: &#x27;sortOrder,title&#x27;, 
+                eventClick: function(info) { 
+                    info.jsEvent.stopPropagation(); 
+                    showModalFromProps(info.event.extendedProps); 
+                },
+                dateClick: function(info) {
+                    showTargetSumModalOfDate(info.dateStr);
+                },
+                dayCellDidMount: function(info) {
+                    const cellEl = info.el;
+                    
+                    cellEl.addEventListener(&#x27;mouseenter&#x27;, function(e) {
+                        if (currentViewMode !== &#x27;calendar&#x27;) return;
+                        showTargetSumTooltip(info.date, e);
+                    });
+                    
+                    cellEl.addEventListener(&#x27;mousemove&#x27;, function(e) {
+                        if (currentViewMode !== &#x27;calendar&#x27;) return;
+                        positionTooltip(e);
+                    });
+                    
+                    cellEl.addEventListener(&#x27;mouseleave&#x27;, function() {
+                        hideTooltip();
+                    });
+                },
+                datesSet: function() { 
+                    if(currentViewMode === &#x27;gantt&#x27;) {
+                        updateGanttTitle();
+                        applyFilters(); 
+                    } else {
+                        updateSummary(); 
+                    }
+                }
+            });
+            calendar.render();
+            currentFilteredEvents = [...allEvents]; 
+        }
+
+        /* [복구 완료] 날짜 칸을 클릭했을 때 나타나는 일일 타겟 요약 팝업창 */
+        function showTargetSumModalOfDate(clickedDateStr) {
+            const targetCampaigns = currentFilteredEvents.filter(e =&gt; {
+                return e.extendedProps.type === &#x27;start&#x27; &amp;&amp; e.start === clickedDateStr;
+            });
+
+            let dateTitle = clickedDateStr;
+            const dateParts = clickedDateStr.split(&quot;-&quot;);
+            if (dateParts.length === 3) { dateTitle = `${dateParts[1]}/${dateParts[2]}`; }
+            document.getElementById(&#x27;modalTitle&#x27;).innerText = `${dateTitle} 발송 캠페인 타겟 수`;
+            
+            if (targetCampaigns.length === 0) {
+                document.getElementById(&#x27;modalBody&#x27;).innerHTML = `&lt;div style=&quot;text-align:center; color:var(--text-muted); padding:20px 0;&quot;&gt;해당 날짜에 시작하는 캠페인이 없습니다.&lt;/div&gt;`;
+                document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;block&#x27;;
+                return;
+            }
+
+            let tvTargetSum = 0, toastTargetSum = 0, couponTargetSum = 0, segTargetSum = 0;
+            let listHtml = `&lt;div style=&quot;margin-top:14px; margin-bottom:8px; font-weight:600; color:var(--accent-purple); font-size:12px;&quot;&gt;시작 캠페인 목록 (${targetCampaigns.length}건):&lt;/div&gt;`;
+            listHtml += `&lt;ul style=&quot;margin:0; padding-left:18px; color:var(--text-main); max-height:180px; overflow-y:auto; font-size:11.5px; line-height:1.6;&quot;&gt;`;
+
+            targetCampaigns.forEach(c =&gt; {
+                const props = c.extendedProps;
+                const filterVal = (props[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase(); 
+                const targetValue = getTargetValue(props); 
+
+                if (filterVal.includes(&quot;TV&quot;)) { tvTargetSum += targetValue; }
+                if (filterVal.includes(&quot;토스트&quot;)) { toastTargetSum += targetValue; }
+                if (filterVal.includes(&quot;쿠폰&quot;)) { couponTargetSum += targetValue; }
+                if (filterVal.includes(&quot;SEG&quot;) || filterVal.includes(&quot;배너&quot;)) { segTargetSum += targetValue; }
+
+                listHtml += `&lt;li style=&quot;margin-bottom:4px;&quot;&gt;${c.title} &lt;span style=&quot;color:var(--text-muted);&quot;&gt;(${formatTargetNumber(targetValue)})&lt;/span&gt;&lt;/li&gt;`;
+            });
+            listHtml += `&lt;/ul&gt;`;
+
+            const remainingCouponCapa = 2700000 - couponTargetSum;
+            const couponCapaFormatted = formatTargetNumber(remainingCouponCapa &lt; 0 ? 0 : remainingCouponCapa);
+            const remainingSegCapa = 3000000 - segTargetSum;
+            const segCapaFormatted = formatTargetNumber(remainingSegCapa &lt; 0 ? 0 : remainingSegCapa);
+
+            let contentHtml = `
+                &lt;div class=&quot;modal-target-grid&quot;&gt;
+                    &lt;div class=&quot;modal-target-card&quot;&gt;&lt;div class=&quot;modal-target-card-label&quot;&gt;TV팝업&lt;/div&gt;&lt;div class=&quot;modal-target-card-value&quot;&gt;${formatTargetNumber(tvTargetSum)}&lt;/div&gt;&lt;/div&gt;
+                    &lt;div class=&quot;modal-target-card&quot;&gt;&lt;div class=&quot;modal-target-card-label&quot;&gt;토스트팝업&lt;/div&gt;&lt;div class=&quot;modal-target-card-value&quot;&gt;${formatTargetNumber(toastTargetSum)}&lt;/div&gt;&lt;/div&gt;
+                    &lt;div class=&quot;modal-target-card&quot;&gt;&lt;div class=&quot;modal-target-card-label&quot;&gt;쿠폰&lt;/div&gt;&lt;div class=&quot;modal-target-card-value&quot;&gt;${formatTargetNumber(couponTargetSum)}&lt;span class=&quot;capa-text&quot;&gt;(잔여: ${couponCapaFormatted})&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                    &lt;div class=&quot;modal-target-card&quot;&gt;&lt;div class=&quot;modal-target-card-label&quot;&gt;타겟배너(Seg)&lt;/div&gt;&lt;div class=&quot;modal-target-card-value&quot;&gt;${formatTargetNumber(segTargetSum)}&lt;span class=&quot;capa-text&quot;&gt;(잔여: ${segCapaFormatted})&lt;/span&gt;&lt;/div&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                ${listHtml}
+            `;
+
+            document.getElementById(&#x27;modalBody&#x27;).innerHTML = contentHtml;
+            document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;block&#x27;;
+        }
+
+        function showTargetSumTooltip(dateObj, event) {
+            const offset = dateObj.getTimezoneOffset() * 60000;
+            const clickedDateStr = new Date(dateObj.getTime() - offset).toISOString().split(&#x27;T&#x27;)[0];
+
+            const targetCampaigns = currentFilteredEvents.filter(e =&gt; {
+                return e.extendedProps.type === &#x27;start&#x27; &amp;&amp; e.start === clickedDateStr;
+            });
+
+            const tooltip = document.getElementById(&#x27;dateHoverTooltip&#x27;);
+
+            let tvCount = 0, toastCount = 0, couponCount = 0, segCount = 0;
+            let tvTargetSum = 0, toastTargetSum = 0, couponTargetSum = 0, segTargetSum = 0;
+
+            targetCampaigns.forEach(c =&gt; {
+                const props = c.extendedProps;
+                const filterVal = (props[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase(); 
+                const targetValue = getTargetValue(props); 
+
+                if (filterVal.includes(&quot;TV&quot;)) { tvCount++; tvTargetSum += targetValue; }
+                if (filterVal.includes(&quot;토스트&quot;)) { toastCount++; toastTargetSum += targetValue; }
+                if (filterVal.includes(&quot;쿠폰&quot;)) { couponCount++; couponTargetSum += targetValue; }
+                if (filterVal.includes(&quot;SEG&quot;) || filterVal.includes(&quot;배너&quot;)) { segCount++; segTargetSum += targetValue; }
+            });
+
+            tooltip.innerHTML = `
+                &lt;strong style=&quot;color:#000000 !important;&quot;&gt;TV:&lt;/strong&gt; ${tvCount}건 (${formatTargetNumber(tvTargetSum)}) &lt;span style=&quot;color:rgba(0,0,0,0.12)&quot;&gt;|&lt;/span&gt; 
+                &lt;strong style=&quot;color:#000000 !important;&quot;&gt;토스트:&lt;/strong&gt; ${toastCount}건 (${formatTargetNumber(toastTargetSum)}) &lt;span style=&quot;color:rgba(0,0,0,0.12)&quot;&gt;|&lt;/span&gt; 
+                &lt;strong style=&quot;color:#000000 !important;&quot;&gt;쿠폰:&lt;/strong&gt; ${couponCount}건 (${formatTargetNumber(couponTargetSum)}) &lt;span style=&quot;color:rgba(0,0,0,0.12)&quot;&gt;|&lt;/span&gt; 
+                &lt;strong style=&quot;color:#000000 !important;&quot;&gt;배너:&lt;/strong&gt; ${segCount}건 (${formatTargetNumber(segTargetSum)})
+            `;
+
+            positionTooltip(event);
+            tooltip.style.display = &#x27;block&#x27;;
+        }
+
+        function positionTooltip(e) {
+            const tooltip = document.getElementById(&#x27;dateHoverTooltip&#x27;);
+            if(!tooltip || tooltip.style.display === &#x27;none&#x27;) return;
+            
+            let x = e.pageX + 12;
+            let y = e.pageY + 12;
+            
+            if (x + tooltip.offsetWidth &gt; window.innerWidth + window.scrollX) {
+                x = e.pageX - tooltip.offsetWidth - 12;
+            }
+            if (y + tooltip.offsetHeight &gt; window.innerHeight + window.scrollY) {
+                y = e.pageY - tooltip.offsetHeight - 12;
+            }
+
+            tooltip.style.left = x + &#x27;px&#x27;;
+            tooltip.style.top = y + &#x27;px&#x27;;
+        }
+
+        function hideTooltip() {
+            const tooltip = document.getElementById(&#x27;dateHoverTooltip&#x27;);
+            if(tooltip) tooltip.style.display = &#x27;none&#x27;;
+        }
+
+        function applyFilters() {
+            const activeFilters = Array.from(document.querySelectorAll(&#x27;.type-filter:checked&#x27;)).map(el =&gt; el.value);
+            const activeDateFilters = Array.from(document.querySelectorAll(&#x27;.date-filter:checked&#x27;)).map(el =&gt; el.value);
+            const searchText = document.getElementById(&#x27;eventSearch&#x27;).value.toUpperCase();
+            
+            currentFilteredEvents = allEvents.filter(event =&gt; {
+                const p = event.extendedProps;
+                const title = (event.title || &quot;&quot;).toUpperCase();
+                const filterText = (p[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase(); 
+                
+                const matchesSearch = title.includes(searchText);
+                const matchesDateType = activeDateFilters.includes(p.type);
+                
+                let matchesType = false;
+                if (activeFilters.length === 0) { matchesType = true; } 
+                else {
+                    const hasTV = activeFilters.includes(&quot;TV&quot;) &amp;&amp; filterText.includes(&quot;TV&quot;);
+                    const hasToast = activeFilters.includes(&quot;토스트팝업&quot;) &amp;&amp; filterText.includes(&quot;토스트&quot;);
+                    const hasCoupon = activeFilters.includes(&quot;쿠폰&quot;) &amp;&amp; filterText.includes(&quot;쿠폰&quot;);
+                    const hasSeg = activeFilters.includes(&quot;Seg채널&quot;) &amp;&amp; (filterText.includes(&quot;SEG&quot;) || filterText.includes(&quot;배너&quot;));
+                    matchesType = hasTV || hasToast || hasCoupon || hasSeg;
+                }
+                return matchesSearch &amp;&amp; matchesDateType &amp;&amp; matchesType;
+            });
+
+            if(calendar) {
+                calendar.removeAllEvents();
+                calendar.addEventSource(currentFilteredEvents);
+            }
+            if (currentViewMode === &#x27;gantt&#x27;) { renderGanttChart(activeFilters, searchText); }
+            updateSummary(currentFilteredEvents);
+        }
+
+        function renderGanttChart(activeFilters, searchText) {
+            const headerTimeline = document.getElementById(&#x27;ganttHeaderTimeline&#x27;);
+            const rowsContainer = document.getElementById(&#x27;ganttRowsContainer&#x27;);
+            
+            headerTimeline.innerHTML = &quot;&quot;;
+            rowsContainer.innerHTML = &quot;&quot;;
+
+            if (!calendar) return;
+
+            const currentPeriod = calendar.getDate();
+            const year = currentPeriod.getFullYear();
+            const month = currentPeriod.getMonth(); 
+
+            const totalDays = new Date(year, month + 1, 0).getDate();
+            const weekDays = [&#x27;일&#x27;, &#x27;월&#x27;, &#x27;화&#x27;, &#x27;수&#x27;, &#x27;목&#x27;, &#x27;금&#x27;, &#x27;토&#x27;];
+            const gridStyle = `repeat(${totalDays}, minmax(0, 1fr))`;
+            headerTimeline.style.gridTemplateColumns = gridStyle;
+
+            for (let d = 1; d &lt;= totalDays; d++) {
+                const dateObj = new Date(year, month, d);
+                const dayOfWeek = weekDays[dateObj.getDay()];
+                const dayEl = document.createElement(&#x27;div&#x27;);
+                dayEl.className = &#x27;gantt-month-day&#x27;;
+                if (dateObj.getDay() === 6) dayEl.classList.add(&#x27;sat&#x27;);
+                if (dateObj.getDay() === 0) dayEl.classList.add(&#x27;sun&#x27;);
+                dayEl.innerText = `${d}(${dayOfWeek})`;
+                headerTimeline.appendChild(dayEl);
+            }
+
+            let itemsToRender = [...rawSourceData];
+            itemsToRender.sort((a, b) =&gt; {
+                const dateA = new Date(cleanDateStr(a[&#x27;시작일&#x27;]) || &#x27;9999-12-31&#x27;);
+                const dateB = new Date(cleanDateStr(b[&#x27;시작일&#x27;]) || &#x27;9999-12-31&#x27;);
+                return dateA - dateB; 
+            });
+
+            let renderCount = 0;
+
+            itemsToRender.forEach(item =&gt; {
+                const title = item[&#x27;campaign_name&#x27;] || item[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+                const filterText = (item[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase();
+                
+                if (searchText &amp;&amp; !title.toUpperCase().includes(searchText)) return;
+
+                if (activeFilters.length &gt; 0) {
+                    const hasTV = activeFilters.includes(&quot;TV&quot;) &amp;&amp; filterText.includes(&quot;TV&quot;);
+                    const hasToast = activeFilters.includes(&quot;토스트팝업&quot;) &amp;&amp; filterText.includes(&quot;토스트&quot;);
+                    const hasCoupon = activeFilters.includes(&quot;쿠폰&quot;) &amp;&amp; filterText.includes(&quot;쿠폰&quot;);
+                    const hasSeg = activeFilters.includes(&quot;Seg채널&quot;) &amp;&amp; (filterText.includes(&quot;SEG&quot;) || filterText.includes(&quot;배너&quot;));
+                    if (!(hasTV || hasToast || hasCoupon || hasSeg)) return;
+                }
+
+                const sDateStr = cleanDateStr(item[&#x27;시작일&#x27;]);
+                const eDateStr = cleanDateStr(item[&#x27;종료일&#x27;]) || sDateStr;
+                if (!sDateStr) return;
+
+                const sDate = new Date(sDateStr);
+                const eDate = new Date(eDateStr);
+                const monthStart = new Date(year, month, 1);
+                const monthEnd = new Date(year, month, totalDays);
+
+                if (eDate &lt; monthStart || sDate &gt; monthEnd) return;
+                renderCount++;
+
+                let startActiveDay = sDate.getMonth() === month ? sDate.getDate() : 1;
+                let endActiveDay = eDate.getMonth() === month ? eDate.getDate() : totalDays;
+                if(endActiveDay &lt; startActiveDay) endActiveDay = startActiveDay;
+
+                const dayWidthPercent = 100 / totalDays;
+                const leftPosition = (startActiveDay - 1) * dayWidthPercent;
+                const barWidth = ((endActiveDay - startActiveDay) + 1) * dayWidthPercent;
+
+                const row = document.createElement(&#x27;div&#x27;);
+                row.className = &#x27;gantt-row gantt-table-row-layout&#x27;;
+
+                const titleCell = document.createElement(&#x27;div&#x27;);
+                titleCell.className = &#x27;gantt-label-col gantt-title-cell&#x27;;
+                titleCell.innerText = title; titleCell.title = title;
+                row.appendChild(titleCell);
+
+                const timelineCol = document.createElement(&#x27;div&#x27;);
+                timelineCol.className = &#x27;gantt-timeline-col&#x27;;
+
+                const gridBg = document.createElement(&#x27;div&#x27;);
+                gridBg.className = &#x27;gantt-grid-bg&#x27;; gridBg.style.gridTemplateColumns = gridStyle;
+                for (let gridDay = 1; gridDay &lt;= totalDays; gridDay++) {
+                    const colDiv = document.createElement(&#x27;div&#x27;);
+                    colDiv.className = &#x27;gantt-cell-col&#x27;;
+                    gridBg.appendChild(colDiv);
+                }
+                timelineCol.appendChild(gridBg);
+
+                const barContainer = document.createElement(&#x27;div&#x27;);
+                barContainer.className = &#x27;gantt-bar-container&#x27;;
+
+                const bar = document.createElement(&#x27;div&#x27;);
+                bar.className = &#x27;gantt-bar&#x27;;
+                bar.style.left = `${leftPosition}%`; bar.style.width = `${barWidth}%`;
+                bar.innerText = title; bar.title = `${title} (${sDateStr} ~ ${eDateStr})`;
+
+                const extendedPropsObj = { ...item, _calStart: sDateStr, _calEnd: eDateStr };
+                bar.onclick = (e) =&gt; { e.stopPropagation(); showModalFromProps(extendedPropsObj); };
+
+                barContainer.appendChild(bar);
+                timelineCol.appendChild(barContainer);
+                row.appendChild(timelineCol);
+                rowsContainer.appendChild(row);
+            });
+
+            if (renderCount === 0) {
+                rowsContainer.innerHTML = `&lt;div class=&quot;gantt-empty-msg&quot;&gt;필터 조건에 부합하는 캠페인이 존재하지 않습니다.&lt;/div&gt;`;
+            }
+        }
+
+        function updateSummary(currentEvents) {
+            const eventsToCount = currentEvents || allEvents;
+            if (!calendar) return;
+            
+            const currentMonth = calendar.getDate().getMonth();
+            const thisMonthEvents = eventsToCount.filter(e =&gt; {
+                const parts = e.start.split(&quot;-&quot;);
+                if(parts.length &gt;= 2) { return (parseInt(parts[1], 10) - 1) === currentMonth; }
+                return false;
+            });
+
+            const starts = thisMonthEvents.filter(e =&gt; e.extendedProps.type === &#x27;start&#x27;).length;
+            const ends = thisMonthEvents.filter(e =&gt; e.extendedProps.type === &#x27;end&#x27;).length;
+            const uniqueCampaigns = thisMonthEvents.filter(e =&gt; e.extendedProps.type === &#x27;start&#x27;);
+            
+            let tvCount = 0, toastCount = 0, couponCount = 0, segCount = 0;
+            let tvTargetSum = 0, toastTargetSum = 0, couponTargetSum = 0, segTargetSum = 0;
+
+            uniqueCampaigns.forEach(e =&gt; {
+                const props = e.extendedProps;
+                const filterText = (props[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase();
+                const targetValue = getTargetValue(props); 
+
+                if (filterText.includes(&quot;TV&quot;)) { tvCount++; tvTargetSum += targetValue; }
+                if (filterText.includes(&quot;토스트&quot;)) { toastCount++; toastTargetSum += targetValue; }
+                if (filterText.includes(&quot;쿠폰&quot;)) { couponCount++; couponTargetSum += targetValue; }
+                if (filterText.includes(&quot;SEG&quot;) || filterText.includes(&quot;배너&quot;)) { segCount++; segTargetSum += targetValue; }
+            });
+
+            document.getElementById(&#x27;startCount&#x27;).innerText = starts;
+            document.getElementById(&#x27;endCount&#x27;).innerText = ends;
+            document.getElementById(&#x27;tvCount&#x27;).innerText = tvCount;
+            document.getElementById(&#x27;toastCount&#x27;).innerText = toastCount;
+            document.getElementById(&#x27;couponCount&#x27;).innerText = couponCount;
+            document.getElementById(&#x27;segCount&#x27;).innerText = segCount;
+
+            const formatToManOnly = (num) =&gt; {
+                if (!num || isNaN(num)) return &quot;0만&quot;;
+                return Math.round(num / 10000).toLocaleString(&#x27;ko-KR&#x27;) + &quot;만&quot;;
+            };
+
+            document.getElementById(&#x27;tvTarget&#x27;).innerText = `(${formatToManOnly(tvTargetSum)})`;
+            document.getElementById(&#x27;toastTarget&#x27;).innerText = `(${formatToManOnly(toastTargetSum)})`;
+            document.getElementById(&#x27;couponTarget&#x27;).innerText = `(${formatToManOnly(couponTargetSum)})`;
+            document.getElementById(&#x27;segTarget&#x27;).innerText = `(${formatToManOnly(segTargetSum)})`;
+        }
+
+        function showModalFromProps(p) {
+            document.getElementById(&#x27;modalTitle&#x27;).innerText = p[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+            let bodyHtml = `&lt;div&gt;&lt;b&gt;기간:&lt;/b&gt; ${p._calStart} ~ ${p._calEnd}&lt;/div&gt;`;
+            
+            Object.keys(p).forEach(key =&gt; {
+                if(![&#x27;type&#x27;, &#x27;start&#x27;, &#x27;end&#x27;, &#x27;allDay&#x27;, &#x27;title&#x27;, &#x27;sortOrder&#x27;, &#x27;_calStart&#x27;, &#x27;_calEnd&#x27;, &#x27;캠페인명&#x27;, &#x27;시작일&#x27;, &#x27;종료일&#x27;].includes(key)) {
+                    const normalizedKey = key.replace(/\s+/g, &#x27;&#x27;);
+                    if (normalizedKey !== &#x27;타겟수&#x27; &amp;&amp; normalizedKey !== &#x27;채널&#x27; &amp;&amp; normalizedKey !== &#x27;쿠폰&#x27;) {
+                        const cleanedVal = p[key]; 
+                        if (cleanedVal) {
+                            let displayKey = (key === &#x27;필터&#x27;) ? &#x27;채널&#x27; : key;
+                            bodyHtml += `&lt;div&gt;&lt;b&gt;${displayKey}:&lt;/b&gt; ${cleanedVal}&lt;/div&gt;`;
+                        }
+                    }
+                }
+            });
+            
+            document.getElementById(&#x27;modalBody&#x27;).innerHTML = bodyHtml;
+            document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;block&#x27;;
+        }
+
+        function closeModal() { document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;none&#x27;; }
+    &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+    </section>
+    <section id="applyPanel" class="tab-panel" aria-label="캠페인 신청">
+      <iframe id="applyFrame" class="tab-frame" title="캠페인 신청" srcdoc="&lt;!DOCTYPE html&gt;
+&lt;html lang=&quot;ko&quot;&gt;
+&lt;head&gt;
+  &lt;meta charset=&quot;UTF-8&quot; /&gt;
+  &lt;meta name=&quot;viewport&quot; content=&quot;width=device-width, initial-scale=1.0&quot; /&gt;
+  &lt;title&gt;캠페인 신청&lt;/title&gt;
+
+  &lt;style&gt;
+    :root {
+      --bg-main: #f8fafc;
+      --bg-card: #ffffff;
+      --bg-card-inner: #f1f5f9;
+      --text-main: #0f172a;
+      --text-sub: #334155;
+      --text-muted: #64748b;
+      --border-color: #e2e8f0;
+      --start-color: #64748b;
+      --accent-purple: #334155;
+      --accent-purple-soft: #f1f5f9;
+      --accent-gray: #64748b;
+      --danger: #b91c1c;
+      --success: #047857;
+      --shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, &quot;Segoe UI&quot;, Roboto, &quot;Helvetica Neue&quot;, Arial, sans-serif;
+      background: var(--bg-main);
+      color: var(--text-main);
+      padding: 25px;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 760px;
+      margin: 0 auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      box-shadow: var(--shadow-card);
+      overflow: hidden;
+    }
+
+    .header {
+      margin: 18px 20px 0;
+      padding: 18px 22px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+      border: 1px solid #e2e8f0;
+      border-left: 4px solid var(--start-color);
+      border-radius: 12px;
+      color: var(--text-main);
+    }
+
+    .header h1 {
+      margin: 0 0 6px;
+      font-size: 20px;
+      line-height: 1.25;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text-main);
+    }
+
+    .header p {
+      margin: 0;
+      color: var(--text-muted);
+      font-size: 15px;
+      line-height: 1.45;
+      font-weight: 500;
+    }
+
+    .history-bar {
+      padding: 16px 20px 0;
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 9px 18px;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      user-select: none;
+    }
+
+    .history-btn,
+    .submit-btn,
+    .search-btn {
+      background: var(--accent-purple);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(51, 65, 85, 0.16);
+    }
+
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    form {
+      padding: 22px 20px 26px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+    }
+
+    .field {
+      display: flex;
+      flex-direction: column;
+      gap: 7px;
+    }
+
+    .field.full { grid-column: 1 / -1; }
+
+    label {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    input,
+    select {
+      width: 100%;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 10px 12px;
+      font-size: 15px;
+      line-height: 1.35;
+      outline: none;
+      background: var(--bg-card);
+      color: var(--text-main);
+      transition: all 0.2s ease;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
+    }
+
+    input::placeholder { color: #94a3b8; }
+
+    input:focus,
+    select:focus {
+      border-color: #64748b;
+      box-shadow: 0 0 0 3px rgba(100, 116, 139, 0.16);
+    }
+
+    .checkbox-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .checkbox-card {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 9px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--text-muted);
+      background: var(--bg-card);
+      transition: all 0.2s ease;
+    }
+
+    .checkbox-card:hover {
+      border-color: #cbd5e1;
+      background: var(--accent-purple-soft);
+      color: var(--accent-purple);
+    }
+
+    .checkbox-card input {
+      width: 16px;
+      height: 16px;
+      margin: 0;
+      accent-color: var(--accent-purple);
+    }
+
+    .recommend-box {
+      padding: 12px 14px;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 14px;
+      line-height: 1.65;
+      color: var(--text-sub);
+    }
+
+    .recommend-box strong { color: var(--text-main); }
+    .recommend-warning { color: var(--danger); font-weight: 800; }
+    .recommend-good { color: var(--success); font-weight: 800; }
+
+    .actions {
+      margin-top: 22px;
+      display: flex;
+      gap: 10px;
+    }
+
+    .reset-btn {
+      background: var(--bg-card-inner);
+      color: var(--text-sub);
+      border: 1px solid var(--border-color);
+    }
+
+    .message {
+      margin-top: 16px;
+      display: none;
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .message.success { display: block; background: #ecfdf5; color: var(--success); border: 1px solid #a7f3d0; }
+    .message.error { display: block; background: #fef2f2; color: var(--danger); border: 1px solid #fecaca; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.32);
+      backdrop-filter: blur(6px);
+      z-index: 10;
+      padding: 24px;
+      overflow: auto;
+    }
+
+    .modal.open { display: block; }
+
+    .modal-box {
+      max-width: 960px;
+      margin: 40px auto;
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 10px 10px -5px rgba(0,0,0,0.04);
+    }
+
+    .modal-header {
+      padding: 18px 22px;
+      background: linear-gradient(135deg, #f1f5f9 0%, #f8fafc 100%);
+      border-bottom: 1px solid var(--border-color);
+      color: var(--text-main);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 18px;
+      letter-spacing: -0.02em;
+    }
+
+    .close-btn {
+      background: #e2e8f0;
+      color: var(--text-sub);
+      padding: 8px 14px;
+      border: 1px solid #cbd5e1;
+    }
+
+    .modal-body { padding: 22px 24px 28px; }
+
+    .search-row {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .search-row input { flex: 1; }
+
+    .result-info {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 900px;
+    }
+
+    th, td {
+      padding: 11px 12px;
+      border-bottom: 1px solid var(--border-color);
+      text-align: left;
+      font-size: 14px;
+    }
+
+    th {
+      background: #f8fafc;
+      color: var(--text-muted);
+      font-weight: 800;
+    }
+
+    .load-history-btn {
+      border: 0;
+      border-radius: 999px;
+      background: #111827;
+      color: #ffffff;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(17, 24, 39, 0.16);
+    }
+
+    .load-history-btn:hover {
+      background: #1e293b;
+    }
+
+    .empty {
+      padding: 24px;
+      text-align: center;
+      color: var(--text-muted);
+      font-weight: 700;
+    }
+
+    @media (max-width: 640px) {
+      body { padding: 16px 12px; }
+      .container { border-radius: 12px; }
+      .header { margin: 14px 14px 0; padding: 16px; }
+      form { padding: 18px 14px 22px; }
+      .history-bar { padding: 14px 14px 0; }
+      .modal-body, .modal-header { padding: 18px; }
+      .grid { grid-template-columns: 1fr; }
+      .actions, .search-row { flex-direction: column; }
+      button, .history-btn, .checkbox-card { width: 100%; }
+    }
+  &lt;/style&gt;
+&lt;/head&gt;
+
+&lt;body&gt;
+  &lt;main class=&quot;container&quot;&gt;
+    &lt;section class=&quot;header&quot;&gt;
+      &lt;h1&gt;캠페인 신청&lt;/h1&gt;
+      &lt;p&gt;캠페인 일정 및 기획 정보를 신청하는 페이지입니다&lt;/p&gt;
+    &lt;/section&gt;
+
+    &lt;div class=&quot;history-bar&quot;&gt;
+      &lt;button type=&quot;button&quot; class=&quot;history-btn&quot; id=&quot;openHistoryBtn&quot;&gt;
+        이전 신청 내역 보기
+      &lt;/button&gt;
+    &lt;/div&gt;
+
+    &lt;form id=&quot;campaignForm&quot;&gt;
+      &lt;div class=&quot;grid&quot;&gt;
+        &lt;div class=&quot;field full&quot;&gt;
+          &lt;label for=&quot;campaign&quot;&gt;캠페인명&lt;/label&gt;
+          &lt;input type=&quot;text&quot; id=&quot;campaign&quot; placeholder=&quot;예: 지상파 6월 첫달무료 프로모션&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;startDate&quot;&gt;시작일&lt;/label&gt;
+          &lt;input type=&quot;date&quot; id=&quot;startDate&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;endDate&quot;&gt;종료일&lt;/label&gt;
+          &lt;input type=&quot;date&quot; id=&quot;endDate&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field full&quot;&gt;
+          &lt;label&gt;채널&lt;/label&gt;
+          &lt;div class=&quot;checkbox-group&quot;&gt;
+            &lt;label class=&quot;checkbox-card&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; name=&quot;channel&quot; value=&quot;Seg채널&quot; /&gt;
+              Seg채널
+            &lt;/label&gt;
+            &lt;label class=&quot;checkbox-card&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; name=&quot;channel&quot; value=&quot;토스트팝업&quot; /&gt;
+              토스트팝업
+            &lt;/label&gt;
+            &lt;label class=&quot;checkbox-card&quot;&gt;
+              &lt;input type=&quot;checkbox&quot; name=&quot;channel&quot; value=&quot;TV팝업&quot; /&gt;
+              TV팝업
+            &lt;/label&gt;
+          &lt;/div&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;optionOne&quot;&gt;주기성 여부&lt;/label&gt;
+          &lt;select id=&quot;optionOne&quot; required&gt;
+            &lt;option value=&quot;&quot;&gt;선택&lt;/option&gt;
+            &lt;option value=&quot;Y&quot;&gt;Y&lt;/option&gt;
+            &lt;option value=&quot;N&quot;&gt;N&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;optionTwo&quot;&gt;쿠폰 여부&lt;/label&gt;
+          &lt;select id=&quot;optionTwo&quot; required&gt;
+            &lt;option value=&quot;&quot;&gt;선택&lt;/option&gt;
+            &lt;option value=&quot;쿠폰&quot;&gt;쿠폰&lt;/option&gt;
+            &lt;option value=&quot;없음&quot;&gt;없음&lt;/option&gt;
+          &lt;/select&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;targetCount&quot;&gt;타겟 수&lt;/label&gt;
+          &lt;input type=&quot;number&quot; id=&quot;targetCount&quot; placeholder=&quot;예: 400000&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field&quot;&gt;
+          &lt;label for=&quot;team&quot;&gt;요청 부서&lt;/label&gt;
+          &lt;input type=&quot;text&quot; id=&quot;team&quot; placeholder=&quot;예: 월정액리텐션팀&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field full&quot;&gt;
+          &lt;label for=&quot;manager&quot;&gt;담당자&lt;/label&gt;
+          &lt;input type=&quot;text&quot; id=&quot;manager&quot; placeholder=&quot;예: 조유경&quot; required /&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;field full&quot;&gt;
+          &lt;label&gt;시작일 기준 가능 여부&lt;/label&gt;
+          &lt;div id=&quot;recommendationBox&quot; class=&quot;recommend-box&quot;&gt;
+            시작일, 채널, 쿠폰 여부, 타겟 수를 입력하면 확정 일정 기준으로 가능 여부가 표시됩니다.
+          &lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;actions&quot;&gt;
+        &lt;button type=&quot;submit&quot; class=&quot;submit-btn&quot; id=&quot;submitBtn&quot;&gt;신청 등록&lt;/button&gt;
+        &lt;button type=&quot;reset&quot; class=&quot;reset-btn&quot; id=&quot;resetBtn&quot;&gt;초기화&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div id=&quot;message&quot; class=&quot;message&quot;&gt;&lt;/div&gt;
+    &lt;/form&gt;
+  &lt;/main&gt;
+
+  &lt;section class=&quot;modal&quot; id=&quot;historyModal&quot;&gt;
+    &lt;div class=&quot;modal-box&quot;&gt;
+      &lt;div class=&quot;modal-header&quot;&gt;
+        &lt;h2&gt;이전 신청 내역 보기&lt;/h2&gt;
+        &lt;button type=&quot;button&quot; class=&quot;close-btn&quot; id=&quot;closeHistoryBtn&quot;&gt;닫기&lt;/button&gt;
+      &lt;/div&gt;
+
+      &lt;div class=&quot;modal-body&quot;&gt;
+        &lt;div class=&quot;search-row&quot;&gt;
+          &lt;input type=&quot;text&quot; id=&quot;historyKeyword&quot; placeholder=&quot;담당자 이름 또는 캠페인명을 입력하세요&quot; /&gt;
+          &lt;button type=&quot;button&quot; class=&quot;search-btn&quot; id=&quot;searchHistoryBtn&quot;&gt;검색&lt;/button&gt;
+        &lt;/div&gt;
+
+        &lt;div class=&quot;result-info&quot; id=&quot;resultInfo&quot;&gt;
+          최근 1개월 내 신청 내역만 조회됩니다.
+        &lt;/div&gt;
+
+        &lt;div class=&quot;table-wrap&quot; id=&quot;resultArea&quot;&gt;
+          &lt;div class=&quot;empty&quot;&gt;검색어를 입력한 뒤 검색 버튼을 눌러주세요.&lt;/div&gt;
+        &lt;/div&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+  &lt;/section&gt;
+
+  &lt;script&gt;
+    const GOOGLE_FORM_ACTION_URL =
+      &quot;https://docs.google.com/forms/d/e/1FAIpQLSeUm1pgaWzWPB5zzlW9ugoE6BqC_Huex3FYu8NYxxdzFgb41g/formResponse&quot;;
+
+    const SHEET_ID =
+      &quot;1V1476ZgCyUd8q0DB-8rSp6mi_Q4PRHAwYbU8UoZEhSU&quot;;
+
+    const HISTORY_SHEET_GID = &quot;219078491&quot;;
+    const CONFIRMED_SHEET_GID = &quot;0&quot;;
+
+    const ENTRY = {
+      campaign: &quot;entry.458971124&quot;,
+      startDate: &quot;entry.773533181&quot;,
+      endDate: &quot;entry.1461402252&quot;,
+      channel: &quot;entry.485853250&quot;,
+      optionOne: &quot;entry.5131662&quot;,
+      optionTwo: &quot;entry.490288765&quot;,
+      targetCount: &quot;entry.1012106116&quot;,
+      team: &quot;entry.1888132724&quot;,
+      manager: &quot;entry.871876714&quot;
+    };
+
+    const form = document.getElementById(&quot;campaignForm&quot;);
+    const message = document.getElementById(&quot;message&quot;);
+    const submitBtn = document.getElementById(&quot;submitBtn&quot;);
+    const recommendationBox = document.getElementById(&quot;recommendationBox&quot;);
+
+    form.addEventListener(&quot;submit&quot;, function (e) {
+      e.preventDefault();
+
+      message.className = &quot;message&quot;;
+      message.textContent = &quot;&quot;;
+
+      const selectedChannels = document.querySelectorAll(&#x27;input[name=&quot;channel&quot;]:checked&#x27;);
+
+      if (selectedChannels.length === 0) {
+        message.className = &quot;message error&quot;;
+        message.textContent = &quot;채널을 1개 이상 선택해주세요.&quot;;
+        return;
+      }
+
+      const formData = new FormData();
+
+      formData.append(ENTRY.campaign, document.getElementById(&quot;campaign&quot;).value.trim());
+      formData.append(ENTRY.startDate, document.getElementById(&quot;startDate&quot;).value);
+      formData.append(ENTRY.endDate, document.getElementById(&quot;endDate&quot;).value);
+
+      selectedChannels.forEach((checkbox) =&gt; {
+        formData.append(ENTRY.channel, checkbox.value);
+      });
+
+      formData.append(ENTRY.optionOne, document.getElementById(&quot;optionOne&quot;).value);
+      formData.append(ENTRY.optionTwo, document.getElementById(&quot;optionTwo&quot;).value);
+      formData.append(ENTRY.targetCount, document.getElementById(&quot;targetCount&quot;).value);
+      formData.append(ENTRY.team, document.getElementById(&quot;team&quot;).value.trim());
+      formData.append(ENTRY.manager, document.getElementById(&quot;manager&quot;).value.trim());
+
+      submitBtn.disabled = true;
+      submitBtn.textContent = &quot;등록 중...&quot;;
+
+      fetch(GOOGLE_FORM_ACTION_URL, {
+        method: &quot;POST&quot;,
+        mode: &quot;no-cors&quot;,
+        body: formData
+      })
+        .then(() =&gt; {
+          message.className = &quot;message success&quot;;
+          message.textContent = &quot;신청이 완료되었습니다.&quot;;
+          form.reset();
+          updateRecommendation();
+        })
+        .catch(() =&gt; {
+          message.className = &quot;message error&quot;;
+          message.textContent = &quot;제출 중 오류가 발생했습니다. 잠시 후 다시 시도해주세요.&quot;;
+        })
+        .finally(() =&gt; {
+          submitBtn.disabled = false;
+          submitBtn.textContent = &quot;신청 등록&quot;;
+        });
+    });
+
+    document.getElementById(&quot;resetBtn&quot;).addEventListener(&quot;click&quot;, function () {
+      setTimeout(updateRecommendation, 0);
+    });
+
+    [&quot;startDate&quot;, &quot;targetCount&quot;, &quot;optionTwo&quot;].forEach((id) =&gt; {
+      document.getElementById(id).addEventListener(&quot;change&quot;, updateRecommendation);
+      document.getElementById(id).addEventListener(&quot;input&quot;, updateRecommendation);
+    });
+
+    document.querySelectorAll(&#x27;input[name=&quot;channel&quot;]&#x27;).forEach((checkbox) =&gt; {
+      checkbox.addEventListener(&quot;change&quot;, updateRecommendation);
+    });
+
+    function updateRecommendation() {
+      const startDate = document.getElementById(&quot;startDate&quot;).value;
+      const targetCount = Number(document.getElementById(&quot;targetCount&quot;).value || 0);
+      const couponYn = document.getElementById(&quot;optionTwo&quot;).value;
+
+      const selectedChannels = Array.from(
+        document.querySelectorAll(&#x27;input[name=&quot;channel&quot;]:checked&#x27;)
+      ).map((el) =&gt; el.value);
+
+      if (!startDate || !targetCount || selectedChannels.length === 0 || !couponYn) {
+        recommendationBox.innerHTML =
+          &quot;시작일, 채널, 쿠폰 여부, 타겟 수를 입력하면 확정 일정 기준으로 가능 여부가 표시됩니다.&quot;;
+        return;
+      }
+
+      const selectedDate = new Date(startDate);
+
+      if (selectedDate.getMonth() === 5 &amp;&amp; selectedDate.getDay() === 0) {
+        recommendationBox.innerHTML =
+          &#x27;&lt;span class=&quot;recommend-warning&quot;&gt;※ 6월 일요일 신규 캠페인은 실행 불가합니다&lt;/span&gt;&#x27;;
+        return;
+      }
+
+      recommendationBox.innerHTML = &quot;확정 캠페인 일정을 확인하는 중입니다...&quot;;
+
+      const callbackName = &quot;confirmedScheduleCallback_&quot; + Date.now();
+      let script = document.createElement(&quot;script&quot;);
+
+      window[callbackName] = function (response) {
+        try {
+          if (!response || response.status === &quot;error&quot; || !response.table) {
+            throw new Error(&quot;Confirmed schedule response error&quot;);
+          }
+
+          const rows = convertGoogleVisualizationRows(response);
+          const header = rows[0];
+          const dataRows = rows.slice(1);
+
+          const dateIndex = findHeaderIndex(header, [&quot;시작&quot;, &quot;일자&quot;, &quot;날짜&quot;, &quot;date&quot;], 0);
+          // J열 = 필터, K열 = CAPA 사용량
+          const capaIndex = 10;
+          const timeIndex = findHeaderIndex(header, [&quot;시간&quot;, &quot;실행&quot;, &quot;발송&quot;, &quot;시각&quot;], -1);
+
+          const filterIndex = 9;
+
+          const sameDateRows = dataRows.filter((row) =&gt; {
+            return normalizeDate(row[dateIndex]) === startDate;
+          });
+
+          const bannerUsed = sameDateRows
+            .filter((row) =&gt; isBannerFilter(row[filterIndex]))
+            .reduce((sum, row) =&gt; sum + parseNumber(row[capaIndex]), 0);
+
+          const couponUsed = sameDateRows
+            .filter((row) =&gt; String(row[filterIndex] || &quot;&quot;).includes(&quot;쿠폰&quot;))
+            .reduce((sum, row) =&gt; sum + parseNumber(row[capaIndex]), 0);
+
+          renderCapaRecommendation({
+            startDate,
+            targetCount,
+            couponYn,
+            selectedChannels,
+            bannerUsed,
+            couponUsed
+          });
+        } catch (error) {
+          recommendationBox.innerHTML =
+            &#x27;&lt;span class=&quot;recommend-warning&quot;&gt;확정 일정 시트를 불러오지 못했습니다. 시트 공유 설정 또는 컬럼 구조를 확인해주세요.&lt;/span&gt;&#x27;;
+        } finally {
+          delete window[callbackName];
+          script.remove();
+        }
+      };
+
+      script.src =
+        `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${CONFIRMED_SHEET_GID}&amp;tqx=responseHandler:${callbackName}`;
+
+      script.onerror = function () {
+        recommendationBox.innerHTML =
+          &#x27;&lt;span class=&quot;recommend-warning&quot;&gt;확정 일정 시트를 불러오지 못했습니다. 시트 공유 설정을 확인해주세요.&lt;/span&gt;&#x27;;
+        delete window[callbackName];
+        script.remove();
+      };
+
+      document.body.appendChild(script);
+    }
+
+    function renderCapaRecommendation({
+      startDate,
+      targetCount,
+      couponYn,
+      selectedChannels,
+      bannerUsed,
+      couponUsed
+    }) {
+      const selectedDate = new Date(startDate);
+      const isThursday = selectedDate.getDay() === 4;
+      const bannerDailyCapa = isThursday ? 2700000 : 3000000;
+      const couponDailyCapa = 2700000;
+
+      const bannerRemain = bannerDailyCapa - bannerUsed;
+      const usesBannerCapa = selectedChannels.some(isBannerChannel);
+      const bannerPossible = usesBannerCapa ? targetCount &lt;= bannerRemain : true;
+
+      const couponRemain = couponDailyCapa - couponUsed;
+      const couponPossible = couponYn === &quot;쿠폰&quot; ? targetCount &lt;= couponRemain : true;
+
+      const finalPossible = bannerPossible &amp;&amp; couponPossible;
+
+      let html = &quot;&quot;;
+
+      html += `&lt;strong&gt;배너 CAPA 판단&lt;/strong&gt;&lt;br&gt;`;
+      html += `- 기준 배너 Capa ${formatMan(bannerDailyCapa)} ${isThursday ? &quot;(목요일 기준)&quot; : &quot;&quot;}&lt;br&gt;`;
+      html += `- 확정 배너 사용량 ${formatMan(bannerUsed)}&lt;br&gt;`;
+      html += `- 잔여 배너 Capa ${formatMan(Math.max(bannerRemain, 0))}&lt;br&gt;`;
+
+      if (bannerPossible) {
+        html += `&lt;span class=&quot;recommend-good&quot;&gt;&amp;gt; 배너 기준 진행 가능&lt;/span&gt;&lt;br&gt;&lt;br&gt;`;
+      } else {
+        html += `&lt;span class=&quot;recommend-warning&quot;&gt;&amp;gt; 배너 기준 진행 불가&lt;/span&gt;&lt;br&gt;&lt;br&gt;`;
+      }
+
+      html += `&lt;strong&gt;쿠폰 CAPA 판단&lt;/strong&gt;&lt;br&gt;`;
+
+      if (couponYn === &quot;쿠폰&quot;) {
+        html += `- 기준 쿠폰 Capa ${formatMan(couponDailyCapa)}&lt;br&gt;`;
+        html += `- 확정 쿠폰 사용량 ${formatMan(couponUsed)}&lt;br&gt;`;
+        html += `- 잔여 쿠폰 Capa ${formatMan(Math.max(couponRemain, 0))}&lt;br&gt;`;
+
+        if (couponPossible) {
+          html += `&lt;span class=&quot;recommend-good&quot;&gt;&amp;gt; 쿠폰 기준 진행 가능&lt;/span&gt;&lt;br&gt;&lt;br&gt;`;
+        } else {
+          html += `&lt;span class=&quot;recommend-warning&quot;&gt;&amp;gt; 쿠폰 기준 진행 불가&lt;/span&gt;&lt;br&gt;&lt;br&gt;`;
+        }
+      } else {
+        html += `- 쿠폰 미사용 캠페인입니다.&lt;br&gt;`;
+        html += `&lt;span class=&quot;recommend-good&quot;&gt;&amp;gt; 쿠폰 기준 검토 대상 아님&lt;/span&gt;&lt;br&gt;&lt;br&gt;`;
+      }
+
+      if (finalPossible) {
+        html += `&lt;strong&gt;배너 &amp; 쿠폰 capa 고려 시 신청하신 ${startDate} 실행 가능&lt;/strong&gt;&lt;br&gt;`;
+      } else {
+        html += `&lt;strong class=&quot;recommend-warning&quot;&gt;배너 &amp; 쿠폰 capa 고려 시 신청하신 ${startDate} 실행 불가&lt;/strong&gt;&lt;br&gt;`;
+        html += `불가 시, 대체 가능일 추천 로직은 추후 반영 예정입니다.&lt;br&gt;`;
+      }
+
+      html += `&lt;br&gt;`;
+      html += `※ 주기성 캠페인 : 17~19시 실행&lt;br&gt;`;
+      html += `※ 6월 일요일 신규 캠페인은 실행 불가합니다`;
+
+      recommendationBox.innerHTML = html;
+    }
+
+    function isBannerChannel(channel) {
+      const text = String(channel || &quot;&quot;).replace(/\s/g, &quot;&quot;).toLowerCase();
+      return (
+        text.includes(&quot;seg&quot;) ||
+        text.includes(&quot;seg채널&quot;) ||
+        text.includes(&quot;타겟배너&quot;) ||
+        text.includes(&quot;배너&quot;)
+      );
+    }
+
+    function isBannerFilter(value) {
+      const text = String(value || &quot;&quot;).replace(/\s/g, &quot;&quot;);
+      return (
+        text.includes(&quot;배너&quot;) ||
+        text.includes(&quot;타겟배너&quot;) ||
+        text.toLowerCase().includes(&quot;seg&quot;) ||
+        text.includes(&quot;Seg채널&quot;)
+      );
+    }
+
+    function formatMan(value) {
+      const man = Math.floor(value / 10000);
+      return `${man.toLocaleString()}만`;
+    }
+
+    function normalizeDate(value) {
+      const date = parseDate(value);
+
+      if (isNaN(date.getTime())) return &quot;&quot;;
+
+      const yyyy = date.getFullYear();
+      const mm = String(date.getMonth() + 1).padStart(2, &quot;0&quot;);
+      const dd = String(date.getDate()).padStart(2, &quot;0&quot;);
+
+      return `${yyyy}-${mm}-${dd}`;
+    }
+
+    function parseNumber(value) {
+      if (!value) return 0;
+
+      const cleaned = String(value).replace(/[^0-9]/g, &quot;&quot;);
+      return Number(cleaned || 0);
+    }
+
+    function extractHour(value) {
+      if (!value) return null;
+
+      const text = String(value);
+      const match = text.match(/(\d{1,2})\s*[:시]/);
+
+      if (!match) return null;
+
+      const hour = Number(match[1]);
+
+      if (hour &lt; 0 || hour &gt; 23) return null;
+
+      return hour;
+    }
+
+    const historyModal = document.getElementById(&quot;historyModal&quot;);
+    const openHistoryBtn = document.getElementById(&quot;openHistoryBtn&quot;);
+    const closeHistoryBtn = document.getElementById(&quot;closeHistoryBtn&quot;);
+    const searchHistoryBtn = document.getElementById(&quot;searchHistoryBtn&quot;);
+    const historyKeyword = document.getElementById(&quot;historyKeyword&quot;);
+    const resultArea = document.getElementById(&quot;resultArea&quot;);
+    const resultInfo = document.getElementById(&quot;resultInfo&quot;);
+    let historySearchResults = [];
+
+    openHistoryBtn.addEventListener(&quot;click&quot;, function () {
+      historyModal.classList.add(&quot;open&quot;);
+      historyKeyword.focus();
+    });
+
+    closeHistoryBtn.addEventListener(&quot;click&quot;, function () {
+      historyModal.classList.remove(&quot;open&quot;);
+    });
+
+    historyModal.addEventListener(&quot;click&quot;, function (e) {
+      if (e.target === historyModal) {
+        historyModal.classList.remove(&quot;open&quot;);
+      }
+    });
+
+    historyKeyword.addEventListener(&quot;keydown&quot;, function (e) {
+      if (e.key === &quot;Enter&quot;) {
+        searchHistory();
+      }
+    });
+
+    searchHistoryBtn.addEventListener(&quot;click&quot;, searchHistory);
+
+    function searchHistory() {
+      const keyword = historyKeyword.value.trim().toLowerCase();
+
+      if (!keyword) {
+        resultArea.innerHTML =
+          &#x27;&lt;div class=&quot;empty&quot;&gt;담당자 이름 또는 캠페인명을 입력해주세요.&lt;/div&gt;&#x27;;
+        resultInfo.textContent = &quot;검색어가 필요합니다.&quot;;
+        return;
+      }
+
+      resultArea.innerHTML =
+        &#x27;&lt;div class=&quot;empty&quot;&gt;신청 내역을 불러오는 중입니다...&lt;/div&gt;&#x27;;
+      resultInfo.textContent = &quot;조회 중...&quot;;
+
+      const callbackName = &quot;googleSheetCallback_&quot; + Date.now();
+      let script = document.createElement(&quot;script&quot;);
+
+      window[callbackName] = function (response) {
+        try {
+          if (!response || response.status === &quot;error&quot; || !response.table) {
+            throw new Error(&quot;Google Sheet response error&quot;);
+          }
+
+          const rows = convertGoogleVisualizationRows(response);
+          const header = rows[0];
+          const dataRows = rows.slice(1);
+
+          const timestampIndex = findHeaderIndex(header, [&quot;타임스탬프&quot;, &quot;timestamp&quot;, &quot;시간&quot;], 0);
+          const campaignIndex = findHeaderIndex(header, [&quot;캠페인&quot;, &quot;campaign&quot;], 1);
+          const managerIndex = findHeaderIndex(header, [&quot;담당&quot;, &quot;manager&quot;], 9);
+
+          const filtered = dataRows.filter((row) =&gt; {
+            const timestamp = row[timestampIndex] || &quot;&quot;;
+            const campaign = row[campaignIndex] || &quot;&quot;;
+            const manager = row[managerIndex] || &quot;&quot;;
+
+            return (
+              isWithinLastMonth(timestamp) &amp;&amp;
+              (
+                String(campaign).toLowerCase().includes(keyword) ||
+                String(manager).toLowerCase().includes(keyword)
+              )
+            );
+          });
+
+          filtered.sort((a, b) =&gt; parseDate(b[timestampIndex]) - parseDate(a[timestampIndex]));
+
+          renderResults(header, filtered);
+        } catch (error) {
+          resultArea.innerHTML =
+            &#x27;&lt;div class=&quot;empty&quot;&gt;신청 내역을 불러오지 못했습니다. 시트 공유 설정 또는 컬럼 구조를 확인해주세요.&lt;/div&gt;&#x27;;
+          resultInfo.textContent = &quot;조회 실패&quot;;
+        } finally {
+          delete window[callbackName];
+          script.remove();
+        }
+      };
+
+      script.src =
+        `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?gid=${HISTORY_SHEET_GID}&amp;tqx=responseHandler:${callbackName}`;
+
+      script.onerror = function () {
+        resultArea.innerHTML =
+          &#x27;&lt;div class=&quot;empty&quot;&gt;신청 내역을 불러오지 못했습니다. 시트 공유 설정을 확인해주세요.&lt;/div&gt;&#x27;;
+        resultInfo.textContent = &quot;조회 실패&quot;;
+        delete window[callbackName];
+        script.remove();
+      };
+
+      document.body.appendChild(script);
+    }
+
+    function convertGoogleVisualizationRows(response) {
+      const cols = response.table.cols.map((col) =&gt; col.label || &quot;&quot;);
+      const rows = response.table.rows.map((row) =&gt; {
+        return row.c.map((cell) =&gt; {
+          if (!cell) return &quot;&quot;;
+          return cell.f || cell.v || &quot;&quot;;
+        });
+      });
+
+      return [cols, ...rows];
+    }
+
+    function findHeaderIndex(header, keywords, fallbackIndex) {
+      const foundIndex = header.findIndex((title) =&gt; {
+        const normalizedTitle = String(title || &quot;&quot;).toLowerCase();
+        return keywords.some((keyword) =&gt;
+          normalizedTitle.includes(String(keyword).toLowerCase())
+        );
+      });
+
+      return foundIndex &gt;= 0 ? foundIndex : fallbackIndex;
+    }
+
+    function parseDate(dateText) {
+      if (!dateText) return new Date(&quot;1900-01-01&quot;);
+
+      if (dateText instanceof Date) return dateText;
+
+      const cleaned = String(dateText).trim();
+
+      const directDate = new Date(cleaned);
+      if (!isNaN(directDate.getTime())) return directDate;
+
+      const googleDateMatch = cleaned.match(/Date\((\d+),(\d+),(\d+)(?:,(\d+),(\d+),(\d+))?\)/);
+
+      if (googleDateMatch) {
+        return new Date(
+          Number(googleDateMatch[1]),
+          Number(googleDateMatch[2]),
+          Number(googleDateMatch[3]),
+          Number(googleDateMatch[4] || 0),
+          Number(googleDateMatch[5] || 0),
+          Number(googleDateMatch[6] || 0)
+        );
+      }
+
+      const match = cleaned.match(/(\d{4})[.\-\/]\s?(\d{1,2})[.\-\/]\s?(\d{1,2})/);
+
+      if (match) {
+        return new Date(Number(match[1]), Number(match[2]) - 1, Number(match[3]));
+      }
+
+      return new Date(&quot;1900-01-01&quot;);
+    }
+
+    function isWithinLastMonth(dateText) {
+      const rowDate = parseDate(dateText);
+      const today = new Date();
+      const oneMonthAgo = new Date();
+
+      oneMonthAgo.setMonth(today.getMonth() - 1);
+      oneMonthAgo.setHours(0, 0, 0, 0);
+      today.setHours(23, 59, 59, 999);
+
+      return rowDate &gt;= oneMonthAgo &amp;&amp; rowDate &lt;= today;
+    }
+
+    function escapeHTML(value) {
+      return String(value || &quot;&quot;)
+        .replaceAll(&quot;&amp;&quot;, &quot;&amp;amp;&quot;)
+        .replaceAll(&quot;&lt;&quot;, &quot;&amp;lt;&quot;)
+        .replaceAll(&quot;&gt;&quot;, &quot;&amp;gt;&quot;)
+        .replaceAll(&#x27;&quot;&#x27;, &quot;&amp;quot;&quot;)
+        .replaceAll(&quot;&#x27;&quot;, &quot;&amp;#039;&quot;);
+    }
+
+    function getHistoryRowValue(row, header, keywords, fallbackIndex) {
+      const index = findHeaderIndex(header, keywords, fallbackIndex);
+      return index &gt;= 0 ? row[index] || &quot;&quot; : &quot;&quot;;
+    }
+
+    function setFieldValue(id, value) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.value = value || &quot;&quot;;
+      el.dispatchEvent(new Event(&quot;input&quot;, { bubbles: true }));
+      el.dispatchEvent(new Event(&quot;change&quot;, { bubbles: true }));
+    }
+
+    function normalizeSelectValue(selectId, value) {
+      const select = document.getElementById(selectId);
+      if (!select) return &quot;&quot;;
+
+      const text = String(value || &quot;&quot;).trim();
+      if (!text) return &quot;&quot;;
+
+      const directOption = Array.from(select.options).find((option) =&gt; option.value === text);
+      if (directOption) return directOption.value;
+
+      const normalizedText = text.replace(/\s/g, &quot;&quot;).toLowerCase();
+      const option = Array.from(select.options).find((item) =&gt; {
+        return (
+          item.value.replace(/\s/g, &quot;&quot;).toLowerCase() === normalizedText ||
+          item.textContent.replace(/\s/g, &quot;&quot;).toLowerCase() === normalizedText
+        );
+      });
+
+      return option ? option.value : &quot;&quot;;
+    }
+
+    function loadHistoryRow(rowIndex) {
+      const item = historySearchResults[rowIndex];
+      if (!item) return;
+
+      const { header, row } = item;
+
+      const campaign = getHistoryRowValue(row, header, [&quot;캠페인명&quot;, &quot;캠페인&quot;, &quot;campaign&quot;], 1);
+      const startDate = getHistoryRowValue(row, header, [&quot;시작일&quot;, &quot;시작&quot;, &quot;start&quot;], 2);
+      const endDate = getHistoryRowValue(row, header, [&quot;종료일&quot;, &quot;종료&quot;, &quot;end&quot;], 3);
+      const channel = getHistoryRowValue(row, header, [&quot;채널&quot;, &quot;필터&quot;, &quot;channel&quot;], 4);
+      const optionOne = getHistoryRowValue(row, header, [&quot;주기성&quot;, &quot;주기&quot;, &quot;optionone&quot;], 5);
+      const optionTwo = getHistoryRowValue(row, header, [&quot;쿠폰&quot;, &quot;optiontwo&quot;], 6);
+      const targetCount = getHistoryRowValue(row, header, [&quot;타겟 수&quot;, &quot;타겟수&quot;, &quot;target&quot;], 7);
+      const team = getHistoryRowValue(row, header, [&quot;요청 부서&quot;, &quot;요청부서&quot;, &quot;부서&quot;, &quot;team&quot;], 8);
+      const manager = getHistoryRowValue(row, header, [&quot;담당자&quot;, &quot;담당&quot;, &quot;manager&quot;], 9);
+
+      setFieldValue(&quot;campaign&quot;, campaign);
+      setFieldValue(&quot;startDate&quot;, normalizeDate(startDate));
+      setFieldValue(&quot;endDate&quot;, normalizeDate(endDate));
+      setFieldValue(&quot;optionOne&quot;, normalizeSelectValue(&quot;optionOne&quot;, optionOne));
+      setFieldValue(&quot;optionTwo&quot;, normalizeSelectValue(&quot;optionTwo&quot;, optionTwo));
+      setFieldValue(&quot;targetCount&quot;, String(targetCount || &quot;&quot;).replace(/[^0-9]/g, &quot;&quot;));
+      setFieldValue(&quot;team&quot;, team);
+      setFieldValue(&quot;manager&quot;, manager);
+
+      const normalizedChannel = String(channel || &quot;&quot;).replace(/\s/g, &quot;&quot;).toLowerCase();
+      document.querySelectorAll(&#x27;input[name=&quot;channel&quot;]&#x27;).forEach((checkbox) =&gt; {
+        const value = checkbox.value.replace(/\s/g, &quot;&quot;).toLowerCase();
+        checkbox.checked = normalizedChannel.includes(value);
+        checkbox.dispatchEvent(new Event(&quot;change&quot;, { bubbles: true }));
+      });
+
+      updateRecommendation();
+      historyModal.classList.remove(&quot;open&quot;);
+      message.className = &quot;message success&quot;;
+      message.textContent = &quot;이전 신청 내역을 현재 입력창에 불러왔습니다. 필요한 부분을 수정한 뒤 신청 등록을 눌러주세요.&quot;;
+      window.scrollTo({ top: 0, behavior: &quot;smooth&quot; });
+    }
+
+    function renderResults(header, rows) {
+      historySearchResults = rows.map((row) =&gt; ({ header, row }));
+
+      if (rows.length === 0) {
+        resultArea.innerHTML =
+          &#x27;&lt;div class=&quot;empty&quot;&gt;최근 1개월 내 일치하는 신청 내역이 없습니다.&lt;/div&gt;&#x27;;
+        resultInfo.textContent = &quot;검색 결과 0건&quot;;
+        return;
+      }
+
+      resultInfo.textContent = `검색 결과 ${rows.length}건`;
+
+      const timestampIndex = findHeaderIndex(header, [&quot;타임스탬프&quot;, &quot;timestamp&quot;, &quot;시간&quot;], 0);
+      const displayIndexes = header
+        .map((_, index) =&gt; index)
+        .filter((index) =&gt; index &lt; 10 &amp;&amp; index !== timestampIndex);
+
+      const thead = [&#x27;&lt;th&gt;불러오기&lt;/th&gt;&#x27;]
+        .concat(displayIndexes.map((index) =&gt; `&lt;th&gt;${escapeHTML(header[index] || &quot;&quot;)}&lt;/th&gt;`))
+        .join(&quot;&quot;);
+
+      const tbody = rows
+        .map((row, rowIndex) =&gt; {
+          const loadCell = `&lt;td&gt;&lt;button type=&quot;button&quot; class=&quot;load-history-btn&quot; onclick=&quot;loadHistoryRow(${rowIndex})&quot;&gt;불러오기&lt;/button&gt;&lt;/td&gt;`;
+          const cells = displayIndexes
+            .map((index) =&gt; `&lt;td&gt;${escapeHTML(row[index] || &quot;&quot;)}&lt;/td&gt;`)
+            .join(&quot;&quot;);
+
+          return `&lt;tr&gt;${loadCell}${cells}&lt;/tr&gt;`;
+        })
+        .join(&quot;&quot;);
+
+      resultArea.innerHTML = `
+        &lt;table&gt;
+          &lt;thead&gt;
+            &lt;tr&gt;${thead}&lt;/tr&gt;
+          &lt;/thead&gt;
+          &lt;tbody&gt;${tbody}&lt;/tbody&gt;
+        &lt;/table&gt;
+      `;
+    }
+  &lt;/script&gt;
+&lt;/body&gt;
+&lt;/html&gt;"></iframe>
+    </section>
+    </main>
+  </div>
+
+  <script>
+    const tabButtons = document.querySelectorAll('.side-menu-btn');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    tabButtons.forEach((button) => {
+      button.addEventListener('click', () => {
+        const targetId = button.dataset.tab;
+
+        tabButtons.forEach((btn) => btn.classList.remove('active'));
+        tabPanels.forEach((panel) => panel.classList.remove('active'));
+
+        button.classList.add('active');
+        document.getElementById(targetId).classList.add('active');
+
+        if (targetId === 'calendarPanel') {
+          const frame = document.getElementById('calendarFrame');
+          setTimeout(() => {
+            try {
+              if (frame.contentWindow && frame.contentWindow.calendar) {
+                frame.contentWindow.calendar.render();
+              }
+            } catch (error) {
+              // iframe 내부 렌더링 접근이 제한될 경우에도 탭 전환은 정상 동작합니다.
+            }
+          }, 80);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
