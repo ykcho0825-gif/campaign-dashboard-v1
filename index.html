@@ -655,12 +655,78 @@
             else { return Math.round(num / 100).toLocaleString(&#x27;ko-KR&#x27;) + &quot;백&quot;; }
         }
 
+
+        function normalizeHeaderKey(key) {
+            return String(key || &quot;&quot;)
+                .replace(/^\uFEFF/, &quot;&quot;)
+                .replace(/&quot;/g, &quot;&quot;)
+                .replace(/[\s_\-()（）\[\]]+/g, &quot;&quot;)
+                .toLowerCase();
+        }
+
+        function getRowValue(row, possibleKeys, fallbackIndex) {
+            if (!row) return &quot;&quot;;
+
+            for (const key of possibleKeys) {
+                if (row[key] !== undefined &amp;&amp; row[key] !== null &amp;&amp; String(row[key]).trim() !== &quot;&quot;) {
+                    return String(row[key]).trim();
+                }
+            }
+
+            const normalizedTargets = possibleKeys.map(normalizeHeaderKey);
+            const matchedKey = Object.keys(row).find(key =&gt; normalizedTargets.includes(normalizeHeaderKey(key)));
+            if (matchedKey &amp;&amp; row[matchedKey] !== undefined &amp;&amp; row[matchedKey] !== null) {
+                return String(row[matchedKey]).trim();
+            }
+
+            if (typeof fallbackIndex === &quot;number&quot;) {
+                const values = Object.values(row);
+                if (values[fallbackIndex] !== undefined &amp;&amp; values[fallbackIndex] !== null) {
+                    return String(values[fallbackIndex]).trim();
+                }
+            }
+
+            return &quot;&quot;;
+        }
+
+        function getCampaignTitle(row) {
+            return getRowValue(row, [
+                &quot;캠페인명&quot;,
+                &quot;캠페인 명&quot;,
+                &quot;캠페인&quot;,
+                &quot;campaign_name&quot;,
+                &quot;campaignname&quot;,
+                &quot;Campaign Name&quot;,
+                &quot;campaign&quot;
+            ], 1) || &quot;제목 없음&quot;;
+        }
+
+        function getStartDateValue(row) {
+            return cleanDateStr(getRowValue(row, [
+                &quot;시작일&quot;,
+                &quot;시작 일&quot;,
+                &quot;startDate&quot;,
+                &quot;start_date&quot;,
+                &quot;start&quot;
+            ], 2));
+        }
+
+        function getEndDateValue(row) {
+            return cleanDateStr(getRowValue(row, [
+                &quot;종료일&quot;,
+                &quot;종료 일&quot;,
+                &quot;endDate&quot;,
+                &quot;end_date&quot;,
+                &quot;end&quot;
+            ], 3));
+        }
+
         function processEvents(data) {
             let processed = [];
             data.forEach(event =&gt; {
-                const startVal = cleanDateStr(event[&#x27;시작일&#x27;]);
-                const endVal = cleanDateStr(event[&#x27;종료일&#x27;]) || startVal;
-                const titleVal = event[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+                const startVal = getStartDateValue(event);
+                const endVal = getEndDateValue(event) || startVal;
+                const titleVal = getCampaignTitle(event);
 
                 if (startVal) {
                     processed.push({ 
@@ -908,15 +974,15 @@
 
             let itemsToRender = [...rawSourceData];
             itemsToRender.sort((a, b) =&gt; {
-                const dateA = new Date(cleanDateStr(a[&#x27;시작일&#x27;]) || &#x27;9999-12-31&#x27;);
-                const dateB = new Date(cleanDateStr(b[&#x27;시작일&#x27;]) || &#x27;9999-12-31&#x27;);
+                const dateA = new Date(getStartDateValue(a) || &#x27;9999-12-31&#x27;);
+                const dateB = new Date(getStartDateValue(b) || &#x27;9999-12-31&#x27;);
                 return dateA - dateB; 
             });
 
             let renderCount = 0;
 
             itemsToRender.forEach(item =&gt; {
-                const title = item[&#x27;campaign_name&#x27;] || item[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+                const title = getCampaignTitle(item);
                 const filterText = (item[&#x27;필터&#x27;] || &quot;&quot;).toUpperCase();
                 
                 if (searchText &amp;&amp; !title.toUpperCase().includes(searchText)) return;
@@ -929,8 +995,8 @@
                     if (!(hasTV || hasToast || hasCoupon || hasSeg)) return;
                 }
 
-                const sDateStr = cleanDateStr(item[&#x27;시작일&#x27;]);
-                const eDateStr = cleanDateStr(item[&#x27;종료일&#x27;]) || sDateStr;
+                const sDateStr = getStartDateValue(item);
+                const eDateStr = getEndDateValue(item) || sDateStr;
                 if (!sDateStr) return;
 
                 const sDate = new Date(sDateStr);
@@ -1039,7 +1105,7 @@
         }
 
         function showModalFromProps(p) {
-            document.getElementById(&#x27;modalTitle&#x27;).innerText = p[&#x27;캠페인명&#x27;] || &quot;제목 없음&quot;;
+            document.getElementById(&#x27;modalTitle&#x27;).innerText = getCampaignTitle(p);
             let bodyHtml = `&lt;div&gt;&lt;b&gt;기간:&lt;/b&gt; ${p._calStart} ~ ${p._calEnd}&lt;/div&gt;`;
             
             Object.keys(p).forEach(key =&gt; {
