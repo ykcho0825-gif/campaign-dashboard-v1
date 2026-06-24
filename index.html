@@ -429,6 +429,105 @@
         .modal-target-card-label { font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
         .modal-target-card-value { font-size: 14px; font-weight: 700; color: var(--text-main); }
         .capa-text { display: block; font-size: 10px; font-weight: 600; color: #0284c7; margin-top: 2px; }
+
+
+        /* Capa Assistant */
+        .capa-assistant-card {
+            max-width: 1250px;
+            margin: 0 auto 22px;
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 14px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.05);
+            overflow: hidden;
+        }
+        .capa-assistant-header {
+            width: 100%;
+            border: 0;
+            background: #ffffff;
+            padding: 16px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: pointer;
+            color: var(--text-main);
+            font-weight: 800;
+            font-size: 15px;
+        }
+        .capa-assistant-header span {
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 12px;
+        }
+        .capa-assistant-body {
+            display: none;
+            border-top: 1px solid var(--border-color);
+            padding: 18px 20px 20px;
+            background: #f8fafc;
+        }
+        .capa-assistant-card.open .capa-assistant-body { display: block; }
+        .capa-form-grid {
+            display: grid;
+            grid-template-columns: 1.1fr 1fr 1fr auto;
+            gap: 12px;
+            align-items: end;
+        }
+        .capa-field label {
+            display: block;
+            font-size: 12px;
+            font-weight: 800;
+            color: #475569;
+            margin-bottom: 6px;
+        }
+        .capa-field input {
+            width: 100%;
+            height: 40px;
+            border: 1px solid #cbd5e1;
+            border-radius: 10px;
+            padding: 0 12px;
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 13px;
+            outline: none;
+        }
+        .capa-field input:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 2px rgba(2, 132, 199, 0.12);
+        }
+        .capa-check-btn {
+            height: 40px;
+            border: 0;
+            border-radius: 10px;
+            padding: 0 18px;
+            background: #0f172a;
+            color: #ffffff;
+            font-size: 13px;
+            font-weight: 800;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+        .capa-result {
+            margin-top: 16px;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+        .capa-result-card {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 14px;
+        }
+        .capa-status-ok { color: #15803d; font-weight: 900; }
+        .capa-status-no { color: #dc2626; font-weight: 900; }
+        .capa-line { margin-top: 6px; color: #475569; font-size: 12px; }
+        .capa-line b { color: #0f172a; }
+        .capa-guide { margin-top: 10px; color: #64748b; font-size: 12px; line-height: 1.6; }
+        @media (max-width: 900px) {
+            .capa-form-grid { grid-template-columns: 1fr; }
+            .capa-result { grid-template-columns: 1fr; }
+        }
+
     &lt;/style&gt;
 &lt;/head&gt;
 &lt;body&gt;
@@ -483,6 +582,33 @@
                     &lt;/label&gt;
                 &lt;/div&gt;
             &lt;/div&gt;
+        &lt;/div&gt;
+    &lt;/div&gt;
+
+
+
+    &lt;div class=&quot;capa-assistant-card&quot; id=&quot;capaAssistantCard&quot;&gt;
+        &lt;button type=&quot;button&quot; class=&quot;capa-assistant-header&quot; onclick=&quot;toggleCapaAssistant()&quot;&gt;
+            &lt;strong&gt;Capa Assistant&lt;/strong&gt;
+            &lt;span id=&quot;capaToggleText&quot;&gt;열기 ▼&lt;/span&gt;
+        &lt;/button&gt;
+        &lt;div class=&quot;capa-assistant-body&quot;&gt;
+            &lt;div class=&quot;capa-form-grid&quot;&gt;
+                &lt;div class=&quot;capa-field&quot;&gt;
+                    &lt;label&gt;확인할 일자&lt;/label&gt;
+                    &lt;input type=&quot;date&quot; id=&quot;capaDate&quot;&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;capa-field&quot;&gt;
+                    &lt;label&gt;배너/타겟배너 물량&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; id=&quot;bannerQty&quot; placeholder=&quot;예: 1000000&quot;&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;capa-field&quot;&gt;
+                    &lt;label&gt;쿠폰 물량&lt;/label&gt;
+                    &lt;input type=&quot;number&quot; id=&quot;couponQty&quot; placeholder=&quot;예: 300000&quot;&gt;
+                &lt;/div&gt;
+                &lt;button type=&quot;button&quot; class=&quot;capa-check-btn&quot; onclick=&quot;checkCapaAvailability()&quot;&gt;확인하기&lt;/button&gt;
+            &lt;/div&gt;
+            &lt;div id=&quot;capaResult&quot; class=&quot;capa-guide&quot;&gt;일자와 물량을 입력하면 확정 일정 기준 잔여 Capa를 계산합니다.&lt;/div&gt;
         &lt;/div&gt;
     &lt;/div&gt;
 
@@ -1123,6 +1249,95 @@
             
             document.getElementById(&#x27;modalBody&#x27;).innerHTML = bodyHtml;
             document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;block&#x27;;
+        }
+
+
+
+        function toggleCapaAssistant() {
+            const card = document.getElementById(&#x27;capaAssistantCard&#x27;);
+            const text = document.getElementById(&#x27;capaToggleText&#x27;);
+            if (!card) return;
+            card.classList.toggle(&#x27;open&#x27;);
+            if (text) text.innerText = card.classList.contains(&#x27;open&#x27;) ? &#x27;접기 ▲&#x27; : &#x27;열기 ▼&#x27;;
+        }
+
+        function toCapaNumber(value) {
+            return Number(String(value || &quot;&quot;).replace(/[^0-9]/g, &quot;&quot;)) || 0;
+        }
+
+        function getCapaChannelText(row) {
+            return getRowValue(row, [
+                &quot;필터&quot;, &quot;채널&quot;, &quot;발송채널&quot;, &quot;발송 채널&quot;, &quot;구분&quot;, &quot;유형&quot;
+            ], 8).toUpperCase();
+        }
+
+        function getCapaLimitByDate(dateStr, type) {
+            if (type === &quot;coupon&quot;) return 2700000;
+            const day = new Date(dateStr + &quot;T00:00:00&quot;).getDay();
+            return day === 4 ? 2700000 : 3000000;
+        }
+
+        function checkCapaAvailability() {
+            const date = document.getElementById(&#x27;capaDate&#x27;).value;
+            const bannerInput = toCapaNumber(document.getElementById(&#x27;bannerQty&#x27;).value);
+            const couponInput = toCapaNumber(document.getElementById(&#x27;couponQty&#x27;).value);
+            const resultEl = document.getElementById(&#x27;capaResult&#x27;);
+
+            if (!date) {
+                resultEl.innerHTML = &quot;확인할 일자를 선택해주세요.&quot;;
+                return;
+            }
+
+            let fixedBanner = 0;
+            let fixedCoupon = 0;
+            let bannerCount = 0;
+            let couponCount = 0;
+
+            rawSourceData.forEach(row =&gt; {
+                const rowDate = getStartDateValue(row);
+                if (rowDate !== date) return;
+
+                const channelText = getCapaChannelText(row);
+                const targetValue = getTargetValue(row);
+
+                if (channelText.includes(&quot;쿠폰&quot;)) {
+                    fixedCoupon += targetValue;
+                    couponCount++;
+                }
+
+                if (channelText.includes(&quot;SEG&quot;) || channelText.includes(&quot;배너&quot;) || channelText.includes(&quot;타겟배너&quot;)) {
+                    fixedBanner += targetValue;
+                    bannerCount++;
+                }
+            });
+
+            const bannerLimit = getCapaLimitByDate(date, &quot;banner&quot;);
+            const couponLimit = getCapaLimitByDate(date, &quot;coupon&quot;);
+            const bannerRemain = bannerLimit - fixedBanner - bannerInput;
+            const couponRemain = couponLimit - fixedCoupon - couponInput;
+            const couponHours = couponInput &gt; 0 ? Math.ceil(couponInput / 120000) : 0;
+
+            const bannerStatus = bannerRemain &gt;= 0 ? &quot;✅ 배너 가능&quot; : &quot;⚠️ 배너 불가&quot;;
+            const couponStatus = couponRemain &gt;= 0 ? &quot;✅ 쿠폰 가능&quot; : &quot;⚠️ 쿠폰 불가&quot;;
+
+            resultEl.className = &quot;capa-result&quot;;
+            resultEl.innerHTML = `
+                &lt;div class=&quot;capa-result-card&quot;&gt;
+                    &lt;div class=&quot;${bannerRemain &gt;= 0 ? &#x27;capa-status-ok&#x27; : &#x27;capa-status-no&#x27;}&quot;&gt;${bannerStatus}&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;일 Capa: &lt;b&gt;${bannerLimit.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;기존 확정 물량: &lt;b&gt;${fixedBanner.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt; (${bannerCount}건)&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;신청 물량: &lt;b&gt;${bannerInput.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;잔여 Capa: &lt;b&gt;${bannerRemain.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                &lt;/div&gt;
+                &lt;div class=&quot;capa-result-card&quot;&gt;
+                    &lt;div class=&quot;${couponRemain &gt;= 0 ? &#x27;capa-status-ok&#x27; : &#x27;capa-status-no&#x27;}&quot;&gt;${couponStatus}&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;일 Capa: &lt;b&gt;${couponLimit.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;기존 확정 물량: &lt;b&gt;${fixedCoupon.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt; (${couponCount}건)&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;신청 물량: &lt;b&gt;${couponInput.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class=&quot;capa-line&quot;&gt;잔여 Capa: &lt;b&gt;${couponRemain.toLocaleString(&#x27;ko-KR&#x27;)}&lt;/b&gt;&lt;/div&gt;
+                    &lt;div class=&quot;capa-guide&quot;&gt;쿠폰 신청 물량 기준 예상 발송 소요: ${couponHours}시간 (시간당 12만 건 기준)&lt;/div&gt;
+                &lt;/div&gt;
+            `;
         }
 
         function closeModal() { document.getElementById(&#x27;eventModal&#x27;).style.display = &#x27;none&#x27;; }
